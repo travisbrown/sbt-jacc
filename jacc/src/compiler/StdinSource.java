@@ -3,7 +3,7 @@
 // April 24 2004 01:01 AM
 // 
 
-package compiler;
+package dev.travisbrown.jacc.compiler;
 
 /** A source input phase that reads lines of input from standard input.
  */

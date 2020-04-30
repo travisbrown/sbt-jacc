@@ -3,11 +3,11 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc.grammar;
+package dev.travisbrown.jacc.grammar;
 
-import jacc.util.SCC;
-import jacc.util.BitSet;
-import jacc.util.Interator;
+import dev.travisbrown.jacc.util.SCC;
+import dev.travisbrown.jacc.util.BitSet;
+import dev.travisbrown.jacc.util.Interator;
 
 /** A representation for context free grammars.
  */

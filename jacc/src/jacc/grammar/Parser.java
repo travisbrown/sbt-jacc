@@ -3,7 +3,7 @@
 // April 24 2004 01:01 AM
 //
 
-package jacc.grammar;
+package dev.travisbrown.jacc.grammar;
 
 /** Provides a parsing engine for a given grammar/machine/parse table.
  */

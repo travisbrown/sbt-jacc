@@ -3,14 +3,14 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc;
+package dev.travisbrown.jacc;
 
-import compiler.Phase;
-import compiler.Failure;
-import compiler.Warning;
-import compiler.Handler;
-import compiler.Position;
-import jacc.grammar.Grammar;
+import dev.travisbrown.jacc.compiler.Phase;
+import dev.travisbrown.jacc.compiler.Failure;
+import dev.travisbrown.jacc.compiler.Warning;
+import dev.travisbrown.jacc.compiler.Handler;
+import dev.travisbrown.jacc.compiler.Position;
+import dev.travisbrown.jacc.grammar.Grammar;
 
 /** Abstract parser for the jacc parser generator.  Implements lists
  *  of terminal and nonterminal symbols from which a grammar can be

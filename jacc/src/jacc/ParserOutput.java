@@ -3,13 +3,13 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc;
+package dev.travisbrown.jacc;
 
 import java.io.PrintWriter;
-import jacc.grammar.Grammar;
-import jacc.grammar.Tables;
-import compiler.Handler;
-import compiler.Failure;
+import dev.travisbrown.jacc.grammar.Grammar;
+import dev.travisbrown.jacc.grammar.Tables;
+import dev.travisbrown.jacc.compiler.Handler;
+import dev.travisbrown.jacc.compiler.Failure;
 
 /** Used to output a Java class that implements the generated parser.
  *  This code is based on the ideas presented in the following

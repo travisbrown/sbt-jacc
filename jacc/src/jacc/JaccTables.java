@@ -3,14 +3,14 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc;
+package dev.travisbrown.jacc;
 
-import compiler.Diagnostic;
+import dev.travisbrown.jacc.compiler.Diagnostic;
 
-import jacc.grammar.Grammar;
-import jacc.grammar.LookaheadMachine;
-import jacc.grammar.Resolver;
-import jacc.grammar.Tables;
+import dev.travisbrown.jacc.grammar.Grammar;
+import dev.travisbrown.jacc.grammar.LookaheadMachine;
+import dev.travisbrown.jacc.grammar.Resolver;
+import dev.travisbrown.jacc.grammar.Tables;
 
 /** Represents parse tables used by jacc.  Extends the basic
  *  Tables class from the grammar package with calculation of

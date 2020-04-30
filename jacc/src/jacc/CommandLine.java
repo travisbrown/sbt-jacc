@@ -3,13 +3,13 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc;
+package dev.travisbrown.jacc;
 
 import java.io.File;
 import java.io.PrintWriter;
 
-import compiler.Handler;
-import compiler.SimpleHandler;
+import dev.travisbrown.jacc.compiler.Handler;
+import dev.travisbrown.jacc.compiler.SimpleHandler;
 
 /** A command line interface for the jacc parser generator.
  */

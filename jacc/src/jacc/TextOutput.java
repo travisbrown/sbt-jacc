@@ -3,12 +3,12 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc;
+package dev.travisbrown.jacc;
 
 import java.io.PrintWriter;
-import jacc.grammar.Tables;
-import compiler.Handler;
-import jacc.util.IntSet;
+import dev.travisbrown.jacc.grammar.Tables;
+import dev.travisbrown.jacc.compiler.Handler;
+import dev.travisbrown.jacc.util.IntSet;
 
 /** Used to generate a textual description of the parser machine.
  */

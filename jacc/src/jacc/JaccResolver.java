@@ -3,14 +3,14 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc;
+package dev.travisbrown.jacc;
 
-import jacc.grammar.Grammar;
-import jacc.grammar.LR0Items;
-import jacc.grammar.LookaheadMachine;
-import jacc.grammar.Resolver;
-import jacc.grammar.Tables;
-import jacc.util.IntSet;
+import dev.travisbrown.jacc.grammar.Grammar;
+import dev.travisbrown.jacc.grammar.LR0Items;
+import dev.travisbrown.jacc.grammar.LookaheadMachine;
+import dev.travisbrown.jacc.grammar.Resolver;
+import dev.travisbrown.jacc.grammar.Tables;
+import dev.travisbrown.jacc.util.IntSet;
 
 /** Describes the strategy for resolving conflicts in jacc generated parsers.
  */

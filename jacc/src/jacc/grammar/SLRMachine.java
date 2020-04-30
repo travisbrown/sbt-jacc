@@ -3,9 +3,9 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc.grammar;
+package dev.travisbrown.jacc.grammar;
 
-import jacc.util.IntSet;
+import dev.travisbrown.jacc.util.IntSet;
 
 /** A machine that provides SLR lookahead sets for each reduction.
  */

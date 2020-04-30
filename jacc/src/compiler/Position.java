@@ -3,7 +3,7 @@
 // April 24 2004 01:01 AM
 // 
 
-package compiler;
+package dev.travisbrown.jacc.compiler;
 
 /** An abstraction of a position within a source document.
  *  Source code may come from many different sources: a text file,

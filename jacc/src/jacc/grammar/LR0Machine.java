@@ -3,9 +3,9 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc.grammar;
+package dev.travisbrown.jacc.grammar;
 
-import jacc.util.BitSet;
+import dev.travisbrown.jacc.util.BitSet;
 
 /** A machine that provides LR(0) lookahead sets for each reduction.
  *  LR(0) doesn't really provide any lookaheads at all, but we can

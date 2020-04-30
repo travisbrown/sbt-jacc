@@ -3,7 +3,7 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc.grammar;
+package dev.travisbrown.jacc.grammar;
 
 /** Calculation of nullability.  A nonterminal is nullable if it derives
  *  the empty string.  If X -> a1 ... an is a production then:

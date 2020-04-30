@@ -3,13 +3,13 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc;
+package dev.travisbrown.jacc;
 
-import compiler.Source;
-import compiler.SourceLexer;
-import compiler.Handler;
-import compiler.Warning;
-import compiler.Failure;
+import dev.travisbrown.jacc.compiler.Source;
+import dev.travisbrown.jacc.compiler.SourceLexer;
+import dev.travisbrown.jacc.compiler.Handler;
+import dev.travisbrown.jacc.compiler.Warning;
+import dev.travisbrown.jacc.compiler.Failure;
 
 /** A lexical analyzer for the jacc parser generator.
  */

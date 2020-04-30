@@ -3,10 +3,10 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc;
+package dev.travisbrown.jacc;
 
-import jacc.grammar.Grammar;
-import jacc.grammar.Machine;
+import dev.travisbrown.jacc.grammar.Grammar;
+import dev.travisbrown.jacc.grammar.Machine;
 
 /** A linked list structure for storing conflicts.
  */

@@ -3,10 +3,10 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc;
+package dev.travisbrown.jacc;
 
-import compiler.Handler;
-import compiler.Source;
+import dev.travisbrown.jacc.compiler.Handler;
+import dev.travisbrown.jacc.compiler.Source;
 
 /** A simple extension of the JaccLexer that can be used for debugging.
  *  Replace calls of new JaccLexer(...) with calls to new DebugLexer

@@ -3,7 +3,7 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc.grammar;
+package dev.travisbrown.jacc.grammar;
 
 /** A base class for machines that provide lookahead information.
  *  This makes it possible to support both SLR and LALR parsers

@@ -3,7 +3,7 @@
 // April 24 2004 01:01 AM
 // 
 
-package compiler;
+package dev.travisbrown.jacc.compiler;
 
 /** Base class for compiler phases.  Its only real purpose is to provide
  *  convenient access to a diagnostic handler.

@@ -3,7 +3,7 @@
 // April 24 2004 01:01 AM
 // 
 
-package compiler;
+package dev.travisbrown.jacc.compiler;
 
 /** A base class for building lexical analyzers that use a Source
  *  object as input.

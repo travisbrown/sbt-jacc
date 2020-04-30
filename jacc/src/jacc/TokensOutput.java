@@ -3,11 +3,11 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc;
+package dev.travisbrown.jacc;
 
 import java.io.PrintWriter;
-import jacc.grammar.Grammar;
-import compiler.Handler;
+import dev.travisbrown.jacc.grammar.Grammar;
+import dev.travisbrown.jacc.compiler.Handler;
 
 /** Used to generate the text of a Java interface that defines a numeric
  *  code for each token.

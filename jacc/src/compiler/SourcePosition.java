@@ -3,7 +3,7 @@
 // April 24 2004 01:01 AM
 // 
 
-package compiler;
+package dev.travisbrown.jacc.compiler;
 
 /** A position within a source Source object.
  * 

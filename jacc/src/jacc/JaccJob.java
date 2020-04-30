@@ -3,27 +3,27 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc;
+package dev.travisbrown.jacc;
 
 import java.io.Reader;
 import java.io.FileReader;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
-import compiler.Handler;
-import compiler.Position;
-import compiler.Diagnostic;
-import compiler.Failure;
-import compiler.Warning;
-import compiler.JavaSource;
-import compiler.Phase;
+import dev.travisbrown.jacc.compiler.Handler;
+import dev.travisbrown.jacc.compiler.Position;
+import dev.travisbrown.jacc.compiler.Diagnostic;
+import dev.travisbrown.jacc.compiler.Failure;
+import dev.travisbrown.jacc.compiler.Warning;
+import dev.travisbrown.jacc.compiler.JavaSource;
+import dev.travisbrown.jacc.compiler.Phase;
 
-import jacc.grammar.Grammar;
-import jacc.grammar.Finitary;
-import jacc.grammar.LookaheadMachine;
-import jacc.grammar.Resolver;
-import jacc.grammar.Tables;
-import jacc.grammar.Parser;
+import dev.travisbrown.jacc.grammar.Grammar;
+import dev.travisbrown.jacc.grammar.Finitary;
+import dev.travisbrown.jacc.grammar.LookaheadMachine;
+import dev.travisbrown.jacc.grammar.Resolver;
+import dev.travisbrown.jacc.grammar.Tables;
+import dev.travisbrown.jacc.grammar.Parser;
 
 /** Encapsulates the process of running a single job for the jacc
  *  parser generator, with some degree of independence from the

@@ -3,7 +3,7 @@
 // April 24 2004 01:01 AM
 // 
 
-package compiler;
+package dev.travisbrown.jacc.compiler;
 
 /** Represents a handler for diagnostics.  In particular applications,
  *  we can use subclasses to specify how diagnostics should be handled.

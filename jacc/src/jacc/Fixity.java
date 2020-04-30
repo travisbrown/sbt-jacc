@@ -3,7 +3,7 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc;
+package dev.travisbrown.jacc;
 
 public class Fixity {
     /** Specifies a left associative operator.  If <code>+</code> is

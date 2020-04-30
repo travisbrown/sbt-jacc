@@ -3,7 +3,7 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc.grammar;
+package dev.travisbrown.jacc.grammar;
 
 /** A base class for objects that specify policies for resolving
  *  shift/reduce and reduce/reduce conflicts.

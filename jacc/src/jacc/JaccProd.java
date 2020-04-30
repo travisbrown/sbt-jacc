@@ -3,10 +3,10 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc;
+package dev.travisbrown.jacc;
 
-import jacc.grammar.Grammar;
-import compiler.Position;
+import dev.travisbrown.jacc.grammar.Grammar;
+import dev.travisbrown.jacc.compiler.Position;
 
 /** Represents a production in a jacc grammar.
  */

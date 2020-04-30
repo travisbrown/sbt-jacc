@@ -3,7 +3,7 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc.util;
+package dev.travisbrown.jacc.util;
 
 public abstract class Interator {
     public abstract int     next();

@@ -3,7 +3,7 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc.grammar;
+package dev.travisbrown.jacc.grammar;
 
 /** A framework for describing iterative analyses on the strongly
  *  connected components of a graph.  A typical analysis is described

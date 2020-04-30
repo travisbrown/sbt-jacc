@@ -3,7 +3,7 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc;
+package dev.travisbrown.jacc;
 
 /** Defines the numeric codes that are used to represent Jacc tokens.
  */

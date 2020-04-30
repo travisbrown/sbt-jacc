@@ -3,17 +3,17 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc;
+package dev.travisbrown.jacc;
 
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.util.Date;
-import jacc.grammar.Grammar;
-import jacc.grammar.Machine;
-import compiler.Phase;
-import compiler.Handler;
-import compiler.Failure;
+import dev.travisbrown.jacc.grammar.Grammar;
+import dev.travisbrown.jacc.grammar.Machine;
+import dev.travisbrown.jacc.compiler.Phase;
+import dev.travisbrown.jacc.compiler.Handler;
+import dev.travisbrown.jacc.compiler.Failure;
 
 /** Base class for Jacc output routines.
  */

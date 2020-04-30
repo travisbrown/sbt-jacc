@@ -3,10 +3,10 @@
 // %DISTRIBUTION_DATE!
 // 
 
-package jacc;
+package dev.travisbrown.jacc;
 
 import java.io.PrintWriter;
-import compiler.Handler;
+import dev.travisbrown.jacc.compiler.Handler;
 
 /** Used to generate a dot format description of the LR(0) machine.
  */

@@ -3,7 +3,7 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc.grammar;
+package dev.travisbrown.jacc.grammar;
 
 /** Used to build a set of LR0 items for a grammar, including two extra
  *  items that are used to describe the corresponding augmented grammar.

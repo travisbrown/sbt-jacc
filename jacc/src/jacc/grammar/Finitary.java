@@ -3,7 +3,7 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc.grammar;
+package dev.travisbrown.jacc.grammar;
 
 /** Calculation of finitaryness.  A nonterminal is finitary if it derives
  *  a finite string of terminal symbols.  If X -> a1 ... an is a production

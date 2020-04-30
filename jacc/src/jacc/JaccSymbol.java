@@ -3,9 +3,9 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc;
+package dev.travisbrown.jacc;
 
-import jacc.grammar.Grammar;
+import dev.travisbrown.jacc.grammar.Grammar;
 
 /** Represents a symbol in a jacc grammar.
  */

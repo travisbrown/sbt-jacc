@@ -3,11 +3,11 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc.grammar;
+package dev.travisbrown.jacc.grammar;
 
-import jacc.util.IntSet;
-import jacc.util.BitSet;
-import jacc.util.Interator;
+import dev.travisbrown.jacc.util.IntSet;
+import dev.travisbrown.jacc.util.BitSet;
+import dev.travisbrown.jacc.util.Interator;
 
 /** Describes the construction of parse tables for a given machine, using
  *  lookahead information to help avoid shift/reduce conflicts.

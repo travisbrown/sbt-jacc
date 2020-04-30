@@ -3,7 +3,7 @@
 // April 24 2004 01:01 AM
 // 
 
-package compiler;
+package dev.travisbrown.jacc.compiler;
 
 /** Represents an error diagnostic.  To avoid a clash with java.lang.Error,
  *  we resisted the temptation to call this class Error.

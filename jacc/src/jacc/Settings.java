@@ -3,13 +3,13 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc;
+package dev.travisbrown.jacc;
 
-import jacc.grammar.Grammar;
-import jacc.grammar.LookaheadMachine;
-import jacc.grammar.LR0Machine;
-import jacc.grammar.SLRMachine;
-import jacc.grammar.LALRMachine;
+import dev.travisbrown.jacc.grammar.Grammar;
+import dev.travisbrown.jacc.grammar.LookaheadMachine;
+import dev.travisbrown.jacc.grammar.LR0Machine;
+import dev.travisbrown.jacc.grammar.SLRMachine;
+import dev.travisbrown.jacc.grammar.LALRMachine;
 
 /** Records settings for Jacc generated parsers.
  */

@@ -3,7 +3,7 @@
 // April 24 2004 01:01 AM
 // 
 
-package compiler;
+package dev.travisbrown.jacc.compiler;
 
 /** A base class for objects that represent compiler diagnostics.
  *  Errors should be implemented as subclasses of Failure, while

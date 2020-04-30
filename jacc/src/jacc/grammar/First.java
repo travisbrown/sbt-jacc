@@ -3,9 +3,9 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc.grammar;
+package dev.travisbrown.jacc.grammar;
 
-import jacc.util.BitSet;
+import dev.travisbrown.jacc.util.BitSet;
 
 /** Calculation of first sets.  The first set of a given nonterminal X
  *  is the set of all terminal symbols that can appear at the beginning

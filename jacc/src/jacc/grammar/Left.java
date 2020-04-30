@@ -3,9 +3,9 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc.grammar;
+package dev.travisbrown.jacc.grammar;
 
-import jacc.util.BitSet;
+import dev.travisbrown.jacc.util.BitSet;
 
 /** Calculation of left sets.  The left set of a nonterminal symbol X is
  *  the set of all nonterminals Y such that X derives a string of the form

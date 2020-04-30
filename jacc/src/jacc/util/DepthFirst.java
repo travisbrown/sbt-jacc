@@ -3,7 +3,7 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc.util;
+package dev.travisbrown.jacc.util;
 
 /** A framework for depth first searches.  A search algorithm is
  *  usually described by subclassing, overriding the doneTree and

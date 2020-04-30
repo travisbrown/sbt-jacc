@@ -3,7 +3,7 @@
 // April 24 2004 01:01 AM
 // 
 
-package compiler;
+package dev.travisbrown.jacc.compiler;
 
 /** A simple implementation of the Handler interface that prints the
  *  position and description of each diagnostic on System.err, and

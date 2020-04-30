@@ -3,10 +3,10 @@
 // April 24 2004 01:01 AM
 // 
 
-package jacc;
+package dev.travisbrown.jacc;
 
 import java.io.PrintWriter;
-import compiler.Handler;
+import dev.travisbrown.jacc.compiler.Handler;
 
 /** Used to generate an HTML description of the generated machine.
  */
