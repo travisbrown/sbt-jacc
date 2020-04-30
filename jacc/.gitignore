@@ -1,0 +1,7 @@
+*.class
+*.aux
+*.log
+*.bbl
+*.blg
+dist/
+bin/
