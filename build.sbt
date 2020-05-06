@@ -33,7 +33,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "sbt-jacc",
     javaSource.in(Compile) := baseDirectory.value / "jacc" / "src",
-    libraryDependencies += "de.jflex" % "jflex" % "1.8.1"
+    libraryDependencies += "de.jflex" % "jflex" % "1.8.2"
   )
 
 
