@@ -9,8 +9,8 @@ import java.util.Iterator;
 
 public class ElemInterator implements Iterator<Integer> {
     private int count;
-    private int limit;
-    private int a[];
+    private final int limit;
+    private final int a[];
     public ElemInterator(int[] a, int lo, int hi) {
         this.a     = a;
         this.count = lo;

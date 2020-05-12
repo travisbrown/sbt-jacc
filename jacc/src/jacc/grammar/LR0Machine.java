@@ -15,7 +15,7 @@ import dev.travisbrown.jacc.util.BitSet;
 public class LR0Machine extends LookaheadMachine {
     /** A bitset of all terminal symbols.
      */
-    int[] allTokens;
+    private final int[] allTokens;
 
     /** Construct a machine for a given grammar.
      */

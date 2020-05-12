@@ -22,7 +22,7 @@ public abstract class Analysis {
     /** Records the underlying set of components, starting with the ones
      *  that have no lower descendents.
      */
-    private int[][] comps;
+    private final int[][] comps;
 
     /** Construct a component analysis instance by recording the
      *  component members.

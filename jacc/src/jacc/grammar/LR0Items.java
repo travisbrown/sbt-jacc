@@ -51,7 +51,7 @@ public class LR0Items {
 
     /** An array of item objects, one for each of the items in this set.
      */
-    private Item[] items;
+    private final Item[] items;
 
     /** Pointers to the first kernel item for each production in the
      *  grammar.
@@ -102,10 +102,10 @@ public class LR0Items {
     /** Provides a representation for the individual items in this set.
      */
     public class Item {
-        private int itemNo;
-        private int lhs;
-        private int prodNo;
-        private int pos;
+        private final int itemNo;
+        private final int lhs;
+        private final int prodNo;
+        private final int pos;
 
         /** Construct an item.
          */

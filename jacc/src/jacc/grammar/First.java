@@ -12,11 +12,11 @@ import dev.travisbrown.jacc.util.BitSet;
  *  of a string derived from X.
  */
 public final class First extends Analysis {
-    private Grammar  grammar;
-    private Nullable nullable;
-    private int      numNTs;
-    private int      numTs;
-    private int[][]  first;
+    private final Grammar  grammar;
+    private final Nullable nullable;
+    private final int      numNTs;
+    private final int      numTs;
+    private final int[][]  first;
 
     /** Construct a first set analysis for a given grammar.
      */

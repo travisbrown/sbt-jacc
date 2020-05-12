@@ -13,9 +13,9 @@ import java.util.Iterator;
  *  method.  
  */
 public abstract class DepthFirst {
-    private   Iterator<Integer> seq;
-    protected int[][]   adjs;
-    private   int[]     visited;
+    private   final Iterator<Integer> seq;
+    protected final int[][]   adjs;
+    private   final int[]     visited;
     DepthFirst(Iterator<Integer> seq, int[][] adjs) {
         this.seq  = seq;
         this.adjs = adjs;

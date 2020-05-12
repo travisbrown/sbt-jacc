@@ -15,16 +15,16 @@ import java.util.Iterator;
 public class Tables {
     /** Holds the underlying machine for this set of parse tables.
      */
-    protected LookaheadMachine machine;
+    protected final LookaheadMachine machine;
 
     /** Holds the resolver for dealing with any conflicts that occur.
      */
-    protected Resolver resolver;
+    protected final Resolver resolver;
 
     // For convenience, we cache the following fields from the
     // underlying grammar:
-    protected int numNTs;
-    protected int numTs;
+    protected final int numNTs;
+    protected final int numTs;
 
     /** Construct a set of parse tables using lookahead information for
      *  the given machine.
@@ -64,17 +64,17 @@ public class Tables {
     /** Holds a table recording the actions to be taken on each state
      *  and at each terminal symbol.
      */
-    protected byte[][] action;
+    protected final byte[][] action;
 
     /** Holds the arguments for each action, which is either a state
      *  number for a SHIFT, or a reduce number for a REDUCE.
      */
-    protected int[][] arg;
+    protected final int[][] arg;
 
     /** A table of booleans that records whether a reduce for the
      *  corresponding production appeared in the generated tables.
      */
-    private boolean[][] prodUsed;
+    private final boolean[][] prodUsed;
 
     /** A count of the total number of distinct productions with reduce
      *  actions that are used in the generated tables.
