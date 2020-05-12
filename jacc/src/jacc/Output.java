@@ -8,7 +8,6 @@ package dev.travisbrown.jacc;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.IOException;
-import java.util.Date;
 import dev.travisbrown.jacc.grammar.Grammar;
 import dev.travisbrown.jacc.grammar.Machine;
 import dev.travisbrown.jacc.compiler.Phase;
@@ -92,7 +91,7 @@ public abstract class Output extends Phase {
     /** Output a time/date stamp message
      */
     protected static void datestamp(PrintWriter out) {
-        out.println("// Output created by jacc on " + new Date());
+        out.println("// Output created by jacc");
         out.println();
     }
 }
