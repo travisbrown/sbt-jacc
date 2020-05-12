@@ -177,7 +177,7 @@ public class JaccParser extends JaccAbstractParser implements JaccTokens {
                 return true;
 
             case NONASSOC :
-                parseFixityDefn(Fixity.nonass(precedence++));
+                parseFixityDefn(Fixity.nonAssociative(precedence++));
                 return true;
 
             case RIGHT :
