@@ -14,10 +14,10 @@ package dev.travisbrown.jacc.grammar;
  *  iterate to find finitary values for each nonterminal.
  */
 final public class Finitary extends Analysis {
-    private boolean[] finitary;
-    private boolean[] consider;
-    private Grammar   grammar;
-    private int       numNTs;
+    private final boolean[] finitary;
+    private final boolean[] consider;
+    private final Grammar   grammar;
+    private final int       numNTs;
 
     /** Construct a finitary analysis for a given grammar.
      */

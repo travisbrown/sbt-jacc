@@ -13,8 +13,8 @@ import dev.travisbrown.jacc.util.SCC;
  */
 public class LALRMachine extends LookaheadMachine {
     // For convenience, we cache the following fields from grammar:
-    protected Nullable nullable;
-    protected First    first;
+    protected final Nullable nullable;
+    protected final First    first;
 
     /** Construct a machine for a given grammar.
      */
@@ -30,7 +30,7 @@ public class LALRMachine extends LookaheadMachine {
     /** Records the states that we could have come from in a single step to
      *  reach each state.
      */
-    private int[][] predState;
+    private final int[][] predState;
 
     /** The total number of gotos in all states.
      */

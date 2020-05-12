@@ -13,12 +13,12 @@ import dev.travisbrown.jacc.util.BitSet;
  *  the calculation of SLR lookaheads.
  */
 public final class Follow extends Analysis {
-    private Grammar  grammar;
-    private Nullable nullable;
-    private First    first;
-    private int      numNTs;
-    private int      numTs;
-    private int[][]  follow;
+    private final Grammar  grammar;
+    private final Nullable nullable;
+    private final First    first;
+    private final int      numNTs;
+    private final int      numTs;
+    private final int[][]  follow;
 
     /** Construct a follow set analysis for a given grammar.
      */

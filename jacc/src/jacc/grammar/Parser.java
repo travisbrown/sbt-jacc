@@ -10,19 +10,19 @@ package dev.travisbrown.jacc.grammar;
 public class Parser {
     /** Parse tables for this machine.
      */
-    private Tables tables;
+    private final Tables tables;
 
     /** A stream of input tokens.
      */
-    private int[] input;
+    private final int[] input;
 
     /** The underlying machine for this parser.
      */
-    private Machine machine;
+    private final Machine machine;
 
     /** The underlying grammar for this parser.
      */
-    private Grammar grammar;
+    private final Grammar grammar;
 
     /** Construct a machine for a given grammar.
      */

@@ -11,7 +11,7 @@ import dev.travisbrown.jacc.util.IntSet;
  */
 public class SLRMachine extends LookaheadMachine {
     // For convenience, we cache the following fields from grammar:
-    private Follow follow;
+    private final Follow follow;
 
     /** Construct a machine for a given grammar.
      */

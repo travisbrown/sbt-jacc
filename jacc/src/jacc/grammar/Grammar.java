@@ -54,11 +54,11 @@ public class Grammar {
      *  the initial portion of the array, while terminals go in the tail
      *  portion.
      */
-    private Symbol[]  symbols;
+    private final Symbol[]  symbols;
 
     /** The set of productions for this grammar.
      */
-    private Prod[][]  prods;
+    private final Prod[][]  prods;
 
     /** Constructor for a grammar object; raises an exception if invalid
      *  parameter values are passed in.
@@ -77,20 +77,20 @@ public class Grammar {
 
     /** Records the total number of symbols for this grammar.
      */
-    private int numSyms;
+    private final int numSyms;
 
     /** Records the number of nonterminals for this grammar.
      */
-    private int numNTs;
+    private final int numNTs;
 
     /** Records the number of terminals for this grammar.
      */
-    private int numTs;
+    private final int numTs;
 
     /** Records the strongly connected components that are induced by
      *  dependency relation on nonterminals in this grammar.
      */
-    private int[][]   comps;
+    private final int[][]   comps;
 
     /** Get the total number of symbols in this grammar including
      *  both terminals and nonterminals.

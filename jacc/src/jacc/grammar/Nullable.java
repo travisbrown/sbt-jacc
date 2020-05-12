@@ -14,10 +14,10 @@ package dev.travisbrown.jacc.grammar;
  *  iterate to find nullable values for each nonterminal.
  */
 public final class Nullable extends Analysis {
-    private boolean[] nullable;
-    private boolean[] consider;
-    private Grammar   grammar;
-    private int       numNTs;
+    private final boolean[] nullable;
+    private final boolean[] consider;
+    private final Grammar   grammar;
+    private final int       numNTs;
 
     /** Construct a nullable analysis for a given grammar.
      */

@@ -13,9 +13,9 @@ import dev.travisbrown.jacc.util.BitSet;
  *  calculation of LR(0) item set closures.
  */
 public final class Left extends Analysis {
-    private Grammar  grammar;
-    private int      numNTs;
-    private int[][]  left;
+    private final Grammar  grammar;
+    private final int      numNTs;
+    private final int[][]  left;
 
     /** Construct a left set analysis for a given grammar.
      */

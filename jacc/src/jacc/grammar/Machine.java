@@ -16,7 +16,7 @@ import java.util.Iterator;
 public class Machine {
     /** The underlying grammar for this machine.
      */
-    protected Grammar grammar;
+    protected final Grammar grammar;
 
     /** Construct a machine for a given grammar.
      */
@@ -33,14 +33,14 @@ public class Machine {
     }
 
     // For convenience, we cache the following fields from grammar:
-    protected int  numSyms;
-    protected int  numNTs;
-    protected int  numTs;
-    protected Left left;
+    protected final int  numSyms;
+    protected final int  numNTs;
+    protected final int  numTs;
+    protected final Left left;
 
     /** Holds the collection of LR(0) items for the given grammar.
      */
-    protected LR0Items items;
+    protected final LR0Items items;
 
     /** Counts the number of states in the machine.
      */

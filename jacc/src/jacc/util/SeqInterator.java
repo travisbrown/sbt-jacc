@@ -8,7 +8,8 @@ package dev.travisbrown.jacc.util;
 import java.util.Iterator;
 
 public class SeqInterator implements Iterator<Integer> {
-    private int count, limit;
+    private int count;
+    private final int limit;
     public SeqInterator(int count, int limit) {
         this.count = count;
         this.limit = limit;
