@@ -31,6 +31,7 @@ public class CommandLine {
         NameList    runFiles   = null;
         boolean     wantStates = false;
         PrintWriter out        = new PrintWriter(System.out, true);
+        String outputDir       = null;
 
         for (int i=0; i<args.length; i++) {
             String arg = args[i];
@@ -67,6 +68,12 @@ public class CommandLine {
                         case 'a':
                             settings.setMachineType(Settings.LALR1);
                             break;
+                        case 'o':
+                            if (i+1>=args.length) {
+                                usage("Missing filename for -o option");
+                            }
+                            outputDir = args[++i];
+                            break;
                         case 'e':
                             if (i+1>=args.length) {
                                 usage("Missing filename for -e option");
@@ -102,7 +109,7 @@ public class CommandLine {
         String  firstName = inputs.getFirst();
         int     n         = 1 + Math.max(firstName.lastIndexOf('\\'),
                                          firstName.lastIndexOf('/'));
-        String  prefix    = firstName.substring(0,n);
+        String  prefix    = outputDir == null ? firstName.substring(0,n) : outputDir + "/";
         String  name      = firstName
                              .substring(n, firstName.length()-suffix.length());
         final JaccJob job = new JaccJob(handler, out, settings);
