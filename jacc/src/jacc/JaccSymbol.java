@@ -103,7 +103,7 @@ public class JaccSymbol extends Grammar.Symbol {
             this.fixity = fixity;
             return true;
         } else {
-            return fixity.equalsFixity(this.fixity);
+            return fixity.equals(this.fixity);
         }
     }
 

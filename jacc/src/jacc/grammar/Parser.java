@@ -196,7 +196,7 @@ public class Parser {
 
     /** Provides a representation for the parser's stack.
      */
-    public static class Stack {
+    private static class Stack {
         private int   state;
         private int   symbol;
         private Stack up, down;
@@ -229,7 +229,8 @@ public class Parser {
         Stack push(int state, int symbol) {
             Stack s = this.up;
             if (s==null) {
-                s = this.up = new Stack(this);
+                s = new Stack(this);
+                this.up = s;
             }
             s.state  = state;
             s.symbol = symbol;
