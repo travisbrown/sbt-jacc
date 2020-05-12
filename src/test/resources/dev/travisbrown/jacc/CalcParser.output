@@ -1,0 +1,206 @@
+// Output created by jacc
+
+state 0 (entry on prog)
+    $accept : _prog $end
+
+    $end error
+    error error
+    ')' error
+    ';' error "missing expression"
+    INTEGER shift 3
+    '(' shift 4
+    . error "left operand is missing"
+
+    prog goto 1
+    expr goto 2
+
+state 1 (entry on prog)
+    $accept : prog_$end
+    prog : prog_';' expr    (1)
+
+    $end accept
+    ';' shift 5
+    . error
+
+state 2 (entry on expr)
+    prog : expr_    (2)
+    expr : expr_'+' expr    (3)
+    expr : expr_'-' expr    (4)
+    expr : expr_'*' expr    (5)
+    expr : expr_'/' expr    (6)
+
+    ')' error "unexpected closing parenthesis"
+    '(' error "unexpected opening parenthesis"
+    '*' shift 6
+    '+' shift 7
+    '-' shift 8
+    '/' shift 9
+    $end reduce 2
+    ';' reduce 2
+    . error
+
+state 3 (entry on INTEGER)
+    expr : INTEGER_    (8)
+
+    '(' error
+    error error
+    INTEGER error
+    . reduce 8
+
+state 4 (entry on '(')
+    expr : '('_expr ')'    (7)
+
+    ')' error "empty parentheses"
+    INTEGER shift 3
+    '(' shift 4
+    . error
+
+    expr goto 10
+
+state 5 (entry on ';')
+    prog : prog ';'_expr    (1)
+
+    $end error "unnecessary semicolon after last expression (or missing expression)"
+    INTEGER shift 3
+    '(' shift 4
+    . error
+
+    expr goto 11
+
+state 6 (entry on '*')
+    expr : expr '*'_expr    (5)
+
+    $end error "right operand is missing"
+    ')' error "right operand is missing"
+    INTEGER shift 3
+    '(' shift 4
+    . error
+
+    expr goto 12
+
+state 7 (entry on '+')
+    expr : expr '+'_expr    (3)
+
+    '+' error "right operand is missing"
+    $end error "right operand is missing"
+    ')' error "right operand is missing"
+    INTEGER shift 3
+    '(' shift 4
+    . error
+
+    expr goto 13
+
+state 8 (entry on '-')
+    expr : expr '-'_expr    (4)
+
+    $end error "right operand is missing"
+    ')' error "right operand is missing"
+    INTEGER shift 3
+    '(' shift 4
+    . error
+
+    expr goto 14
+
+state 9 (entry on '/')
+    expr : expr '/'_expr    (6)
+
+    $end error "right operand is missing"
+    ')' error "right operand is missing"
+    INTEGER shift 3
+    '(' shift 4
+    . error
+
+    expr goto 15
+
+state 10 (entry on expr)
+    expr : expr_'+' expr    (3)
+    expr : expr_'-' expr    (4)
+    expr : expr_'*' expr    (5)
+    expr : expr_'/' expr    (6)
+    expr : '(' expr_')'    (7)
+
+    '*' shift 6
+    '+' shift 7
+    '-' shift 8
+    '/' shift 9
+    ')' shift 16
+    . error
+
+state 11 (entry on expr)
+    prog : prog ';' expr_    (1)
+    expr : expr_'+' expr    (3)
+    expr : expr_'-' expr    (4)
+    expr : expr_'*' expr    (5)
+    expr : expr_'/' expr    (6)
+
+    '*' shift 6
+    '+' shift 7
+    '-' shift 8
+    '/' shift 9
+    $end reduce 1
+    ';' reduce 1
+    . error
+
+state 12 (entry on expr)
+    expr : expr_'+' expr    (3)
+    expr : expr_'-' expr    (4)
+    expr : expr_'*' expr    (5)
+    expr : expr '*' expr_    (5)
+    expr : expr_'/' expr    (6)
+
+    '(' error
+    error error
+    INTEGER error
+    . reduce 5
+
+state 13 (entry on expr)
+    expr : expr_'+' expr    (3)
+    expr : expr '+' expr_    (3)
+    expr : expr_'-' expr    (4)
+    expr : expr_'*' expr    (5)
+    expr : expr_'/' expr    (6)
+
+    '(' error
+    INTEGER error
+    error error
+    '*' shift 6
+    '/' shift 9
+    . reduce 3
+
+state 14 (entry on expr)
+    expr : expr_'+' expr    (3)
+    expr : expr_'-' expr    (4)
+    expr : expr '-' expr_    (4)
+    expr : expr_'*' expr    (5)
+    expr : expr_'/' expr    (6)
+
+    '(' error
+    INTEGER error
+    error error
+    '*' shift 6
+    '/' shift 9
+    . reduce 4
+
+state 15 (entry on expr)
+    expr : expr_'+' expr    (3)
+    expr : expr_'-' expr    (4)
+    expr : expr_'*' expr    (5)
+    expr : expr_'/' expr    (6)
+    expr : expr '/' expr_    (6)
+
+    '(' error
+    error error
+    INTEGER error
+    . reduce 6
+
+state 16 (entry on ')')
+    expr : '(' expr ')'_    (7)
+
+    '(' error
+    error error
+    INTEGER error
+    . reduce 7
+
+10 terminals, 2 nonterminals;
+8 grammar rules, 17 states;
+0 shift/reduce and 0 reduce/reduce conflicts reported.
