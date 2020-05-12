@@ -6,6 +6,7 @@
 package dev.travisbrown.jacc.util;
 
 import java.io.PrintWriter;
+import java.util.Iterator;
 
 /** Holds a small set of integers, arranged in increasing numerical order.
  */
@@ -117,7 +118,7 @@ public class IntSet {
         return false;
     }
 
-    public Interator interator() {
+    public Iterator<Integer> iterator() {
         return new ElemInterator(elems,0,used);
     }
 
@@ -134,7 +135,7 @@ public class IntSet {
     }
 
     public void display(PrintWriter out) {
-        Interator es = interator();
+        Iterator<Integer> es = iterator();
         out.print("{");
         for (int count = 0; es.hasNext(); count++) {
             if (count!=0) {

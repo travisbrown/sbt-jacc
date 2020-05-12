@@ -7,7 +7,7 @@ package dev.travisbrown.jacc.grammar;
 
 import dev.travisbrown.jacc.util.SCC;
 import dev.travisbrown.jacc.util.BitSet;
-import dev.travisbrown.jacc.util.Interator;
+import java.util.Iterator;
 
 /** A representation for context free grammars.
  */
@@ -435,7 +435,7 @@ public class Grammar {
     public String displaySymbolSet(int[] s, int offset) {
         StringBuffer buf = new StringBuffer();
         int count        = 0;
-        Interator mems   = BitSet.interator(s, offset);
+        Iterator<Integer> mems   = BitSet.iterator(s, offset);
         while (mems.hasNext()) {
             if (count++ != 0) {
                 buf.append(", ");

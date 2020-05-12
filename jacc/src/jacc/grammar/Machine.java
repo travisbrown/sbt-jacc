@@ -8,7 +8,7 @@ package dev.travisbrown.jacc.grammar;
 import dev.travisbrown.jacc.util.BitSet;
 import dev.travisbrown.jacc.util.IntSet;
 import dev.travisbrown.jacc.util.SCC;
-import dev.travisbrown.jacc.util.Interator;
+import java.util.Iterator;
 
 /** A representation for basic shift/reduce machines built using LR(0)
  *  items.
@@ -188,7 +188,7 @@ public class Machine {
             // kernel of this state.  Start with items in the
             // kernel itself.
 
-            Interator its = kernel.interator();
+            Iterator<Integer> its = kernel.iterator();
             while (its.hasNext()) {
                 LR0Items.Item it = items.getItem(its.next());
                 if (it.canGoto()) {
@@ -207,7 +207,7 @@ public class Machine {
             // recorded in nts.
 
             if (!BitSet.isEmpty(leftnt)) {
-                Interator nts = BitSet.interator(leftnt, 0);
+                Iterator<Integer> nts = BitSet.iterator(leftnt, 0);
                 while (nts.hasNext()) {
                     int nt = nts.next();
                     Grammar.Prod[] prods = grammar.getProds(nt);
@@ -321,7 +321,7 @@ public class Machine {
     private void mergeNullReds() {
         for (int i=0; i<numStates; i++) {
             if (nullReds[i]!=null) {
-                Interator its = nullReds[i].interator();
+                Iterator<Integer> its = nullReds[i].iterator();
                 while (its.hasNext()) {
                     stateSets[i].add(its.next());
                 }
@@ -393,7 +393,7 @@ public class Machine {
     public void display(java.io.PrintWriter out) {
         for (int i=0; i<numStates; i++) {
             out.println("state " + i);
-            for (Interator its = stateSets[i].interator(); its.hasNext();) {
+            for (Iterator<Integer> its = stateSets[i].iterator(); its.hasNext();) {
                 out.print("\t");
                 items.getItem(its.next()).display(out);
                 out.println();

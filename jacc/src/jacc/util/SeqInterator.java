@@ -5,13 +5,15 @@
 
 package dev.travisbrown.jacc.util;
 
-public class SeqInterator extends Interator {
+import java.util.Iterator;
+
+public class SeqInterator implements Iterator<Integer> {
     private int count, limit;
     public SeqInterator(int count, int limit) {
         this.count = count;
         this.limit = limit;
     }
-    public int next() {
+    public Integer next() {
         return count++;
     }
     public boolean hasNext() {

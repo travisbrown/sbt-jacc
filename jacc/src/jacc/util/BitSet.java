@@ -5,6 +5,8 @@
 
 package dev.travisbrown.jacc.util;
 
+import java.util.Iterator;
+
 public class BitSet {
 
     private BitSet() {}
@@ -145,17 +147,17 @@ public class BitSet {
         return mems;
     }
 
-    public static Interator interator(int[] set, int start) {
-        return new BitSetInterator(set, start);
+    public static Iterator<Integer> iterator(int[] set, int start) {
+        return new BitSetIterator(set, start);
     }
 
-    private static class BitSetInterator extends Interator {
+    private static class BitSetIterator implements Iterator<Integer> {
         int[] set;
         int   pos;
         int   mask;
         int   num;
         int   bitCount;
-        BitSetInterator(int[] set, int start) {
+        BitSetIterator(int[] set, int start) {
             this.set = set;
             this.num = start;
             pos      = 0;
@@ -172,7 +174,7 @@ public class BitSet {
                 mask <<= 1;
             }
         }
-        public int next() {
+        public Integer next() {
             int value = num;
             advance();
             return value;
