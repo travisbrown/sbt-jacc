@@ -5,16 +5,18 @@
 
 package dev.travisbrown.jacc.util;
 
+import java.util.Iterator;
+
 /** A framework for depth first searches.  A search algorithm is
  *  usually described by subclassing, overriding the doneTree and
  *  doneVisit functions as appropriate, and then invoking the search
  *  method.  
  */
 public abstract class DepthFirst {
-    private   Interator seq;
+    private   Iterator<Integer> seq;
     protected int[][]   adjs;
     private   int[]     visited;
-    DepthFirst(Interator seq, int[][] adjs) {
+    DepthFirst(Iterator<Integer> seq, int[][] adjs) {
         this.seq  = seq;
         this.adjs = adjs;
         visited   = BitSet.make(adjs.length);

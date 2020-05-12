@@ -7,7 +7,7 @@ package dev.travisbrown.jacc.grammar;
 
 import dev.travisbrown.jacc.util.IntSet;
 import dev.travisbrown.jacc.util.BitSet;
-import dev.travisbrown.jacc.util.Interator;
+import java.util.Iterator;
 
 /** Describes the construction of parse tables for a given machine, using
  *  lookahead information to help avoid shift/reduce conflicts.
@@ -160,7 +160,7 @@ public class Tables {
         }
         // Enter reduces into table.
         for (int i=0; i<rs.length; i++) {
-            Interator bts = BitSet.interator(machine.getLookaheadAt(st,i), 0);
+            Iterator<Integer> bts = BitSet.iterator(machine.getLookaheadAt(st,i), 0);
             while (bts.hasNext()) {
                 int tok = bts.next();
                 switch (action[st][tok]) {

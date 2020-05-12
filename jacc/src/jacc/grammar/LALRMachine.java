@@ -8,7 +8,6 @@ package dev.travisbrown.jacc.grammar;
 import dev.travisbrown.jacc.util.BitSet;
 import dev.travisbrown.jacc.util.IntSet;
 import dev.travisbrown.jacc.util.SCC;
-import dev.travisbrown.jacc.util.Interator;
 
 /** A machine that provides LALR lookahead sets for each reduction.
  */

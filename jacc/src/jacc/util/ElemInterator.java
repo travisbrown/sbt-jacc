@@ -5,7 +5,9 @@
 
 package dev.travisbrown.jacc.util;
 
-public class ElemInterator extends Interator {
+import java.util.Iterator;
+
+public class ElemInterator implements Iterator<Integer> {
     private int count;
     private int limit;
     private int a[];
@@ -17,7 +19,7 @@ public class ElemInterator extends Interator {
     public ElemInterator(int[] a) {
         this (a, 0, a.length);
     }
-    public int next() {
+    public Integer next() {
         return a[count++];
     }
     public boolean hasNext() {
