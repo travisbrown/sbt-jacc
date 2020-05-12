@@ -33,7 +33,9 @@ lazy val root = (project in file("."))
   .settings(
     name := "sbt-jacc",
     javaSource.in(Compile) := baseDirectory.value / "jacc" / "src",
-    libraryDependencies += "de.jflex" % "jflex" % "1.8.2"
+    libraryDependencies += "de.jflex" % "jflex" % "1.8.2",
+    libraryDependencies += "org.scalameta" %% "munit" % "0.7.6" % Test,
+    testFrameworks += new TestFramework("munit.Framework")
   )
 
 
