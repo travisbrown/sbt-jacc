@@ -8,7 +8,10 @@ package dev.travisbrown.jacc.compiler;
 /** A base class for building lexical analyzers that use a Source
  *  object as input.
  */
-public abstract class SourceLexer extends Lexer {
+public abstract class SourceLexer extends Phase {
+    protected int    token;
+    protected String lexemeText;
+
     /** The Source object for this lexical analyzer.
      */
     protected Source source;
@@ -24,7 +27,7 @@ public abstract class SourceLexer extends Lexer {
      */
     protected int col = (-1);
 
-    private SourcePosition pos;
+    private final SourcePosition pos;
 
     protected final static int EOF = -1;
     protected final static int EOL = '\n';
@@ -36,6 +39,18 @@ public abstract class SourceLexer extends Lexer {
         this.pos    = new SourcePosition(source);
         this.line   = source.readLine();
         nextChar();
+    }
+
+    /** Returns the code for the current token.
+     */
+    public int getToken() {
+        return token;
+    }
+
+    /** Returns the text (if any) for the current lexeme.
+     */
+    public String getLexeme() {
+        return lexemeText;
     }
 
     public Position getPos() {
