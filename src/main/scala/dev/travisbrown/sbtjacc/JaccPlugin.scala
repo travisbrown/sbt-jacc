@@ -36,7 +36,8 @@ object JaccPlugin extends AutoPlugin {
 
     jflexSourceFinder.get.foreach { source =>
       val args = Array[String](
-        "-d", s"${jflexOutput.getAbsolutePath}",
+        "-d",
+        s"${jflexOutput.getAbsolutePath}",
         source.getAbsolutePath
       )
       jflex.Main.main(args)
@@ -53,4 +54,3 @@ object JaccPlugin extends AutoPlugin {
     }
   }
 }
-

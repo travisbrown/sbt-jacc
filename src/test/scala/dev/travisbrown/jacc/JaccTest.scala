@@ -8,8 +8,10 @@ class JaccTest extends FunSuite {
   test("Calc") {
     val args = Array(
       "-v",
-      "-o", "build",
-      "-e", "src/test/resources/dev/travisbrown/jacc/Calc.errs",
+      "-o",
+      "build",
+      "-e",
+      "src/test/resources/dev/travisbrown/jacc/Calc.errs",
       "src/test/resources/dev/travisbrown/jacc/Calc.jacc"
     )
     CommandLine.main(args)
