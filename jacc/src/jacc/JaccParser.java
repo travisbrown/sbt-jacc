@@ -370,6 +370,16 @@ public class JaccParser extends JaccAbstractParser implements JaccTokens {
                     break;
                 }
             }
+            if (lexer.getToken()==TOPEN) {
+                lexer.nextToken();
+                name += "<" + parseQualName() + ">";
+                if (lexer.getToken()==TCLOSE) {
+                    lexer.nextToken();
+                } else {
+                    report(new Failure(lexer.getPos(),
+                                       "Missing '>' in generic type"));
+                }
+            }
             if (lexer.getToken()==TCLOSE) {
                 lexer.nextToken();
             } else if (name!=null) {
