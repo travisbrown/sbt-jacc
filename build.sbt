@@ -12,7 +12,7 @@ val compilerOptions = Seq(
   "-Ywarn-numeric-widen",
   "-Xfuture",
   "-Yno-adapted-args",
-   "-Ywarn-unused-import"
+  "-Ywarn-unused-import"
 )
 
 val baseSettings = Seq(
@@ -37,7 +37,6 @@ lazy val root = (project in file("."))
     libraryDependencies += "org.scalameta" %% "munit" % "0.7.6" % Test,
     testFrameworks += new TestFramework("munit.Framework")
   )
-
 
 lazy val publishSettings = Seq(
   releaseCrossBuild := true,
@@ -71,4 +70,3 @@ lazy val publishSettings = Seq(
     )
   )
 )
-
