@@ -9,7 +9,7 @@ import dev.travisbrown.jacc.grammar.Grammar;
 
 /** Represents a symbol in a jacc grammar.
  */
-public class JaccSymbol extends Grammar.Symbol {
+public final class JaccSymbol extends Grammar.Symbol {
     /** Construct a JaccSymbol object for a literal.
      */
     public JaccSymbol(String name, int num) {
@@ -88,7 +88,7 @@ public class JaccSymbol extends Grammar.Symbol {
 
     /** Holds the fixity of this symbol.
      */
-    public Fixity fixity;
+    private Fixity fixity;
 
     /** Set the fixity details for this symbol.
      *

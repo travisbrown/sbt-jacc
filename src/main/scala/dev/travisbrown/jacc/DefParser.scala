@@ -143,8 +143,12 @@ object GrammarDefParser {
   private def symbol[_: P]: P[String] =
     P(javaIdentifier | ("'" ~~ AnyChar ~~ "'").!)
 
-  private def javaIdentifier[_: P]: P[String] =
-    P((CharPred(Character.isJavaIdentifierStart) ~~ CharsWhile(Character.isJavaIdentifierPart).repX).repX(min = 1, sep = ".").!)
+  private def javaIdentifier[_: P]: P[String] = P(
+    (CharPred(Character.isJavaIdentifierStart) ~~ CharsWhile(Character.isJavaIdentifierPart).repX).repX(
+      min = 1,
+      sep = "."
+    ).!
+  )
 
   private def javaGenericParam[_: P]: P[String] = P("<" ~ javaType.rep(min = 1, sep = ",").! ~ ">")
   private def javaType[_: P]: P[String] = P((javaIdentifier ~ javaGenericParam.?).!)

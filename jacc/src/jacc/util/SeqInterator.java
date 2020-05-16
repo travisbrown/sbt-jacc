@@ -7,7 +7,7 @@ package dev.travisbrown.jacc.util;
 
 import java.util.Iterator;
 
-public class SeqInterator implements Iterator<Integer> {
+class SeqInterator implements Iterator<Integer> {
     private int count;
     private final int limit;
     public SeqInterator(int count, int limit) {
