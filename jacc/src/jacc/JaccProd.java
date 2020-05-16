@@ -11,10 +11,10 @@ import dev.travisbrown.jacc.compiler.Position;
 /** Represents a production in a jacc grammar.
  */
 public class JaccProd extends Grammar.Prod {
-    private Fixity       fixity;
-    private JaccSymbol[] prodSyms;
-    private Position     actPos;
-    private String       action;
+    private final Fixity       fixity;
+    private final JaccSymbol[] prodSyms;
+    private final Position     actPos;
+    private final String       action;
 
     /** Construct a production for jacc.  At the time this constructor
      *  will be called (i.e. during parsing) we probably haven't assigned

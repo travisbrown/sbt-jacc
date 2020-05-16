@@ -7,7 +7,7 @@ package dev.travisbrown.jacc.util;
 
 import java.util.Iterator;
 
-public class ElemInterator implements Iterator<Integer> {
+class ElemInterator implements Iterator<Integer> {
     private int count;
     private final int limit;
     private final int a[];

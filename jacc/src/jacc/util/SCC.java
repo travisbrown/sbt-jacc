@@ -6,6 +6,7 @@
 package dev.travisbrown.jacc.util;
 
 import java.io.PrintWriter;
+import java.util.Iterator;
 
 /** An implementation of the strongly connected components algorithm.
  */
@@ -23,6 +24,58 @@ public class SCC {
 
     public static int[][] get(int[][] depends, int len) {
         return get(depends, invert(depends, len), len);
+    }
+
+    /** A framework for depth first searches.  A search algorithm is
+     *  usually described by subclassing, overriding the doneTree and
+     *  doneVisit functions as appropriate, and then invoking the search
+     *  method.
+     */
+    private static abstract class DepthFirst {
+        private   final Iterator<Integer> seq;
+        protected final int[][]   adjs;
+        private   final int[]     visited;
+        DepthFirst(Iterator<Integer> seq, int[][] adjs) {
+            this.seq  = seq;
+            this.adjs = adjs;
+            visited   = BitSet.make(adjs.length);
+        }
+
+        protected void search() {
+            while (seq.hasNext()) {
+                if (visit(seq.next())) {
+                    doneTree();
+                }
+            }
+        }
+
+        private boolean visit(int i) {
+            if (BitSet.addTo(visited,i)) {
+                int[] adj = adjs[i];
+                for (int j=0; j<adj.length; j++) {
+                    visit(adj[j]);
+                }
+                doneVisit(i);
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        /** Describes the action to be performed after visiting a particular
+         *  node.  The default behavior provided here is to do nothing.
+         */
+        void doneVisit(int i) {
+            // Do nothing
+        }
+
+        /** Describes the action to be performed after visiting a particular
+         *  tree in the depth first forest.  The default behavior provided
+         *  here is to do nothing.
+         */
+        void doneTree() {
+            // Do nothing
+        }
     }
 
     // A Depth-first search that returns an array of index values,
@@ -81,7 +134,7 @@ public class SCC {
         }
     }
 
-    public static int[][] invert(int[][] adj) {
+    private static int[][] invert(int[][] adj) {
         return invert(adj, adj.length);
     }
 
@@ -106,7 +159,7 @@ public class SCC {
         return rev;
     }
 
-    public static void displayComponents(PrintWriter out, int[][] comps) {
+    private static void displayComponents(PrintWriter out, int[][] comps) {
         out.println("Components (" + comps.length + " in total):");
         for (int i=0; i<comps.length; i++) {
             out.print(" Component " + i + ": {");
