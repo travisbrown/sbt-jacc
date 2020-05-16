@@ -18,7 +18,7 @@ import dev.travisbrown.jacc.grammar.Grammar;
  *  extends this class with methods for reading the chosen concrete
  *  syntax.
  */
-public abstract class JaccAbstractParser extends Phase {
+abstract class JaccAbstractParser extends Phase {
 
     public JaccAbstractParser(Handler handler) {
         super(handler);
