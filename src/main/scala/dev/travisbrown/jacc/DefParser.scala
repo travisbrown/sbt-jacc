@@ -24,7 +24,7 @@ case class GrammarDef(definitions: List[Definition], productions: List[Productio
   private val symbolList: List[(String, JaccSymbol)] = {
     definitions.collect {
       case Definition.Token(_, names) => names
-    }.flatten ++ productions.map(_.name)
+    }.flatten ++ productions.map(_.name) :+ "error"
   }.map {
     case name if name.startsWith("'") => (name, new JaccSymbol(name, name.charAt(1).toInt))
     case name => (name, new JaccSymbol(name))
@@ -43,21 +43,24 @@ case class GrammarDef(definitions: List[Definition], productions: List[Productio
       precedence += 1
     case Definition.Type(Some(tpe), names) =>
       names.foreach(name => symbols(name).setType(tpe))
+    case Definition.Token(Some(tpe), names) =>
+      names.foreach(name => symbols(name).setType(tpe))
   }
 
-  val literals: List[JaccSymbol] = symbolList.collect {
+  val literals: List[JaccSymbol] = symbolList.sortBy(_._1).collect {
     case (name, sym) if name.startsWith("'") => sym
   }
 
   private var tokenNo = 1
 
-  val terminals: List[JaccSymbol] = symbolList.collect {
-    case (name, sym) if !name.startsWith("'") =>
+  val terminals: List[JaccSymbol] = symbolList.sortBy(_._1).collect {
+    case (name, sym) if !name.startsWith("'") && !productions.map(_.name).contains(name) =>
       while (literals.exists(_.getNum == tokenNo)) {
         tokenNo += 1
       }
 
       sym.setNum(tokenNo)
+      tokenNo += 1
       sym
   }
 
@@ -78,15 +81,11 @@ case class GrammarDef(definitions: List[Definition], productions: List[Productio
         sym
     }
 
-    val start = definitions.collectFirst {
+    val startSym = definitions.collectFirst {
       case Definition.Start(name) => symbols(name)
-    }
+    }.getOrElse(symbols(productions.head.name))
 
-    start match {
-      case Some(startSym) =>
-        startSym :: prods.filterNot(_.eq(startSym))
-      case None => prods
-    }
+    startSym :: prods.filterNot(_.eq(startSym)).sortBy(_.getName)
   }
 
   def getGrammar: Grammar = {
@@ -99,6 +98,36 @@ case class GrammarDef(definitions: List[Definition], productions: List[Productio
 
     new Grammar(arr, nonTerminals.map { case j: JaccSymbol => j.getProds }.toArray.asInstanceOf[Array[Array[Grammar.Prod]]])
   }
+
+  def updateSettings(settings: Settings): Settings = {
+    settings.addPostText(postCode)
+    definitions.foreach {
+      case Definition.Code(value) => settings.addPreText(value)
+      case Definition.Class(value) => settings.setClassName(value)
+      case Definition.Interface(value) => settings.setInterfaceName(value)
+      case Definition.Package(value) => settings.setPackageName(value)
+      //case Definition.Extends(value) => settings.setExtendsName(value)
+      //case Definition.Implements(value) => settings.setImplementsName(value)
+      case Definition.Semantic(value) => settings.setTypeName(value)
+      //case Definition.GetToken(value) => settings.setGetToken(value)
+      //case Definition.NextToken(value) => settings.setNextToken(value)
+      case _ =>
+    }
+
+    settings
+  }
+
+  def parseErrorExamples(input: String): java.lang.Iterable[(String, Array[Int])] = {
+    import scala.collection.JavaConverters._
+
+    fastparse.parse(input, GrammarDefParser.errorExamples(_)) match {
+      case Parsed.Success(values, _) => values.flatMap {
+        case (name, alts) => alts.map { alt =>
+          (name, alt.map(s => symbols(s).getTokenNo).toArray)
+        }
+      }.asJava
+    }
+  }
 }
 
 object GrammarDefParser {
@@ -107,8 +136,30 @@ object GrammarDefParser {
   private implicit val whitespace: ParsingRun[_] => ParsingRun[Unit] =
     JavaWhitespace.whitespace.andThen(MultiLineWhitespace.whitespace)
 
+
+  def compare(g1: Grammar, g2: Grammar): Unit = {
+    def pp(p: Grammar.Prod): String = "{" + p.getLabel + ": " + p.getRhs.mkString(", ") + "}"
+    def ps(s: Grammar.Symbol): String = s match {
+      case js: JaccSymbol => s"[${js.getName} ${js.getNum} ${js.getTokenNo}]"
+    }
+
+    println(g1.symbols.map(ps).mkString(" "))
+    println(g2.symbols.map(ps).mkString(" "))
+
+    println(g1.prods.map(_.map(pp).mkString(" ")).mkString("\n"))
+    println(g2.prods.map(_.map(pp).mkString(" ")).mkString("\n"))
+  }
+
+  def parseFile(path: String): GrammarDef = {
+    val stream = new java.io.FileInputStream(path)
+
+    fastparse.parse(stream, jaccFile(_)) match {
+      case Parsed.Success(value, _) => value
+    }
+  }
+
   def jaccFile[_: P]: P[GrammarDef] =
-    P(fastparse.Start ~ definition.rep ~ "%%" ~ production.rep ~ "%%" ~ AnyChar.rep.! ~ fastparse.End).map {
+    P(fastparse.Start ~ definition.rep ~ "%%" ~ production.rep ~ "%%" ~~ AnyChar.repX.! ~~ fastparse.End).map {
       case (ds, ps, rest) => GrammarDef(ds.toList, ps.toList, rest)
     }
 
@@ -121,7 +172,7 @@ object GrammarDefParser {
   private def semanticDef[_: P]: P[Definition] = P("%semantic" ~ javaType).map(Semantic(_))
   private def startDef[_: P]: P[Definition] = P("%start" ~ javaType).map(Start(_))
 
-  private def codeDef[_: P]: P[Definition] = P("%{" ~ (!"%}" ~ AnyChar).rep.! ~ "%}").map(Code(_))
+  private def codeDef[_: P]: P[Definition] = P("%{" ~~ (!"%}" ~~ AnyChar).repX.! ~~ "%}").map(Code(_))
   private def typeDef[_: P]: P[Definition] = P("%type" ~ ("<" ~ javaType ~ ">").? ~ javaIdentifier.!.rep).map {
     case (t, ps) => Type(t, ps.toList)
   }
@@ -136,7 +187,7 @@ object GrammarDefParser {
     case (name, alts) => Production(name, alts.toList)
   }
 
-  private def alt[_: P]: P[(List[String], Option[String])] = P(symbol.!.rep ~ ("{" ~ javaCode ~ "}").?).map {
+  private def alt[_: P]: P[(List[String], Option[String])] = P(symbol.!.rep ~ ("{" ~ javaCode ~ "}").!.?).map {
     case (ps, code) => (ps.toList, code)
   }
 
@@ -155,4 +206,13 @@ object GrammarDefParser {
 
   private def plainJavaCode[_: P]: P[String] = P((!"{" ~ !"}" ~ AnyChar).rep(1).!)
   private def javaCode[_: P]: P[String] = P((plainJavaCode | ("{" ~ javaCode.rep ~ "}")).rep(1).!)
+
+  private def errorExampleMessage[_: P]: P[String] = P("\"" ~ ("\\\"" | (!"\"" ~ AnyChar)).rep.! ~ "\"")
+  private def errorExample[_: P]: P[(String, List[List[String]])] =
+    P(errorExampleMessage ~ ":" ~ (symbol.!.rep).rep(sep = "|") ~ ";").map {
+      case (message, alts) => (message, alts.map(_.toList).toList)
+    }
+
+  def errorExamples[_: P]: P[List[(String, List[List[String]])]] =
+    P(fastparse.Start ~ errorExample.rep ~ fastparse.End).map(_.toList)
 }

@@ -54,11 +54,11 @@ public class Grammar {
      *  the initial portion of the array, while terminals go in the tail
      *  portion.
      */
-    private final Symbol[]  symbols;
+    public final Symbol[]  symbols;
 
     /** The set of productions for this grammar.
      */
-    private final Prod[][]  prods;
+    public final Prod[][]  prods;
 
     /** Constructor for a grammar object; raises an exception if invalid
      *  parameter values are passed in.
