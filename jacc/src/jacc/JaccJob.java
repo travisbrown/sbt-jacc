@@ -35,12 +35,14 @@ public class JaccJob extends Phase {
     private JaccTables   tables;
     private JaccResolver resolver;
     private PrintWriter  out;
+    private String inputFile;
+    private GrammarDef grammarDef;
 
     public JaccJob(Handler handler, PrintWriter out, Settings settings) {
         super(handler);
         this.out      = out;
         this.settings = settings;
-        this.parser   = new JaccParser(handler, settings);
+        this.parser   = new JaccParser(handler, new Settings());
     }
 
     /** Return the settings for this job.
@@ -81,6 +83,7 @@ public class JaccJob extends Phase {
     public void parseGrammarFile(String inputFile) {
         JaccLexer lexer = lexerFromFile(inputFile);
         if (lexer!=null) {
+            this.inputFile = inputFile;
             parser.parse(lexer);
         }
     }
@@ -89,7 +92,13 @@ public class JaccJob extends Phase {
      *  input grammar.
      */
     public void buildTables() {
-        Grammar grammar = parser.getGrammar();
+        this.grammarDef = GrammarDefParser.parseFile(this.inputFile);
+
+        Grammar grammar2 = parser.getGrammar();
+        Grammar grammar = grammarDef.getGrammar();
+        grammarDef.updateSettings(settings);
+
+        GrammarDefParser.compare(grammar2, grammar);
 
         if (grammar==null || !allDeriveFinite(grammar)) {
             return;
@@ -176,11 +185,18 @@ public class JaccJob extends Phase {
     /** Parse and process a file containing error examples.
      */
     public void readErrorExamples(String inputFile) {
-        out.println("Reading error examples from \"" + inputFile + "\"");
-        JaccLexer lexer = lexerFromFile(inputFile);
-        if (lexer!=null) {
-            parser.parseErrorExamples(lexer, this);
+      System.out.println("Reading " + inputFile);
+      try {
+        Iterable<scala.Tuple2<String, int[]>> it = this.grammarDef.parseErrorExamples(
+          new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(inputFile)))
+        );
+
+        for (scala.Tuple2<String, int[]> t : it) {
+          errorExample(null, t._1(), t._2());
         }
+      } catch (Exception e) {
+        System.err.println(e);
+      }
     }
 
     /** Process a sequence of input symbols that is expected to result
