@@ -36,8 +36,7 @@ public class Grammar {
         this.prods   = prods;
         numNTs       = prods.length;
         numTs        = numSyms - numNTs;
-        calcDepends();
-        comps        = SCC.get(depends, revdeps,numNTs);
+        comps        = SCC.get(calcDepends());
         validate(symbols, prods);
     }
 
@@ -210,32 +209,19 @@ public class Grammar {
     //---------------------------------------------------------------------
     // Dependency calculations:
 
-    /** depends[i] is an array of the NTs that appear in rhs for NT i.
-     */
-    private int[][] depends;
-
-    /** revdeps[i] is an array of the NTs whose rhs contain a ref to NT i.
-     */
-    private int[][] revdeps;
-
     /** Calculate the dependencies between nonterminal symbols in the
      *  grammar.
      */
-    private void calcDepends() {
-        int[][] deps = new int[numNTs][];
+    private int[][] calcDepends() {
         int[]   nts  = BitSet.make(numNTs);
-        depends      = new int[numNTs][];
+        int[][] depends      = new int[numNTs][];
 
-        for (int i=0; i<numNTs; i++) {
-            deps[i] = BitSet.make(numNTs);
-        }
         for (int i=0; i<numNTs; i++) {
             BitSet.clear(nts);
             for (int j=0; j<prods[i].length; j++) {
                 int[] rhs = prods[i][j].getRhs(this);
                 for (int k=0; k<rhs.length; k++) {
                     if (isNonterminal(rhs[k])) {
-                        BitSet.set(deps[rhs[k]], i);
                         BitSet.set(nts, rhs[k]);
                     }
                 }
@@ -243,10 +229,7 @@ public class Grammar {
             depends[i] = BitSet.members(nts);
         }
 
-        revdeps = new int[numNTs][];
-        for (int i=0; i<numNTs; i++) {
-            revdeps[i] = BitSet.members(deps[i]);
-        }
+        return depends;
     }
 
     //---------------------------------------------------------------------
@@ -365,20 +348,6 @@ public class Grammar {
             out.println("No follow analysis");
         } else {
             follow.display(out);
-        }
-    }
-
-    /** Output dependency information for this grammar for debugging and
-     *  inspection.
-     */
-    public void displayDepends(java.io.PrintWriter out) {
-        out.println("Dependency information:");
-        for (int i=0; i<numNTs; i++) {
-            out.print(" " + symbols[i] + ": calls {");
-            out.print(displaySymbols(depends[i],"",", "));
-            out.print("}, called from {");
-            out.print(displaySymbols(revdeps[i],"",", "));
-            out.println("}");
         }
     }
 
