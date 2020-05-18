@@ -146,9 +146,6 @@ public class CommandLine {
              .write(prefix + name + ".dot");
         }
         final boolean showState = wantStates;
-        NameList.visit(runFiles, new NameList.Visitor() {
-            void visit(String name) { job.readRunExample(name, showState); }
-        });
     }
 
     /** Display message describing the format of command line arguments.
