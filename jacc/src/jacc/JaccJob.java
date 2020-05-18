@@ -31,7 +31,6 @@ import dev.travisbrown.jacc.grammar.Parser;
  */
 public class JaccJob extends Phase {
     private Settings     settings;
-    private JaccParser   parser;
     private JaccTables   tables;
     private JaccResolver resolver;
     private PrintWriter  out;
@@ -42,7 +41,6 @@ public class JaccJob extends Phase {
         super(handler);
         this.out      = out;
         this.settings = settings;
-        this.parser   = new JaccParser(handler, new Settings());
     }
 
     /** Return the settings for this job.
@@ -63,29 +61,10 @@ public class JaccJob extends Phase {
         return resolver;
     }
 
-    /** Create a JaccLexer from an input file name.
-     */
-    private JaccLexer lexerFromFile(String inputFile) {
-        try {
-            Reader    input = new FileReader(inputFile);
-            JaccLexer lexer = new JaccLexer(getHandler(),
-                                new JavaSource(getHandler(), inputFile, input));
-            lexer.nextToken(); // prime the token stream
-            return lexer;
-        } catch (FileNotFoundException e) {
-            report(new Failure("Could not open file \"" + inputFile + "\""));
-            return null;
-        }
-    }
-
     /** Parse a grammar file.
      */
     public void parseGrammarFile(String inputFile) {
-        JaccLexer lexer = lexerFromFile(inputFile);
-        if (lexer!=null) {
-            this.inputFile = inputFile;
-            parser.parse(lexer);
-        }
+        this.inputFile = inputFile;
     }
 
     /** Generate a machine and corresponding parse tables for the
@@ -94,11 +73,8 @@ public class JaccJob extends Phase {
     public void buildTables() {
         this.grammarDef = GrammarDefParser.parseFile(this.inputFile);
 
-        Grammar grammar2 = parser.getGrammar();
         Grammar grammar = grammarDef.getGrammar();
         grammarDef.updateSettings(settings);
-
-        GrammarDefParser.compare(grammar2, grammar);
 
         if (grammar==null || !allDeriveFinite(grammar)) {
             return;
@@ -137,49 +113,6 @@ public class JaccJob extends Phase {
             }
         }
         return allFinite;
-    }
-
-    /** Parse a file containing an example input.
-     */
-    public void readRunExample(String inputFile, boolean showState) {
-        out.println("Running example from \"" + inputFile + "\"");
-        JaccLexer lexer = lexerFromFile(inputFile);
-        if (lexer!=null) {
-            runExample(parser.parseSymbols(lexer), showState);
-        }
-    }
-
-    /** Run a sample input through the generated parser and display the
-     *  resulsts at each step.
-     */
-    public void runExample(int[] syms, boolean showState) {
-        Grammar g = parser.getGrammar();
-        Parser  p = new Parser(tables, syms);
-        out.print("start ");
-        for (;;) {
-            out.print(" :  ");
-            p.display(out, showState);
-            switch (p.step()) {
-                case Parser.ACCEPT:
-                    out.println("Accept!");
-                    return;
-                case Parser.ERROR :
-                    out.print("error in state ");
-                    out.print(p.getState());
-                    out.print(", next symbol ");
-                    out.println(g.getSymbol(p.getNextSymbol()));
-                    return;
-                case Parser.GOTO  :
-                    out.print("goto  ");
-                    break;
-                case Parser.SHIFT :
-                    out.print("shift ");
-                    break;
-                case Parser.REDUCE:
-                    out.print("reduce");
-                    break;
-            }
-        }
     }
 
     /** Parse and process a file containing error examples.
