@@ -37,7 +37,7 @@ public class Conflicts {
 
     /** Token symbol on which this conflict occurs.
      */
-    private Grammar.Symbol sym;
+    private JaccSymbol sym;
 
     /** Link to rest of the conflicts in this list.
      */
@@ -46,7 +46,7 @@ public class Conflicts {
     /** Construct a new conflict item.
      */
     private Conflicts(int type, int arg1, int arg2,
-                      Grammar.Symbol sym, Conflicts next) {
+                      JaccSymbol sym, Conflicts next) {
         this.type = type;
         this.arg1 = arg1;
         this.arg2 = arg2;
@@ -56,13 +56,13 @@ public class Conflicts {
 
     /** Construct a shift/reduce conflict.
      */
-    public static Conflicts sr(int arg1, int arg2, Grammar.Symbol sym, Conflicts cs) {
+    public static Conflicts sr(int arg1, int arg2, JaccSymbol sym, Conflicts cs) {
         return append(cs, new Conflicts(SR, arg1, arg2, sym, null));
     }
 
     /** Construct a reduce/reduce conflict.
      */
-    public static Conflicts rr(int arg1, int arg2, Grammar.Symbol sym, Conflicts cs) {
+    public static Conflicts rr(int arg1, int arg2, JaccSymbol sym, Conflicts cs) {
         return append(cs, new Conflicts(RR, arg1, arg2, sym, null));
     }
 
@@ -109,7 +109,7 @@ public class Conflicts {
                     buf.append(machine.reduceItem(st, cs.arg2).getSeqNo());
                 }
                 buf.append(") on ");
-                buf.append(cs.sym.getName());
+                buf.append(cs.sym.name());
                 buf.append(nl);
             }
             return buf.toString();

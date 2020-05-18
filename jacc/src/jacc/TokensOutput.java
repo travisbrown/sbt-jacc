@@ -6,7 +6,7 @@
 package dev.travisbrown.jacc;
 
 import java.io.PrintWriter;
-import dev.travisbrown.jacc.grammar.Grammar;
+import dev.travisbrown.jacc.JaccSymbol;
 import dev.travisbrown.jacc.compiler.Handler;
 
 /** Used to generate the text of a Java interface that defines a numeric
@@ -30,16 +30,13 @@ public class TokensOutput extends Output {
         indent(out, 1);
         out.println("int ENDINPUT = 0;");
         for (int i=0; i<numTs-1; i++) {
-            Grammar.Symbol sym = grammar.getTerminal(i);
-            if (sym instanceof JaccSymbol) {
-                JaccSymbol jsym = (JaccSymbol)sym;
-                String     name = jsym.getName();
-                indent(out, 1);
-                if (name.startsWith("'")) {
-                    out.println("// " + name + " (code=" + jsym.getNum() + ")");
-                } else {
-                    out.println("int " + name + " = " + jsym.getNum() + ";");
-                }
+            JaccSymbol jsym = grammar.getTerminal(i);
+            String     name = jsym.name();
+            indent(out, 1);
+            if (name.startsWith("'")) {
+                out.println("// " + name + " (code=" + jsym.num() + ")");
+            } else {
+                out.println("int " + name + " = " + jsym.num() + ";");
             }
         }
         out.println("}");

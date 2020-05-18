@@ -5,6 +5,7 @@
 
 package dev.travisbrown.jacc.grammar;
 
+import dev.travisbrown.jacc.JaccProd;
 import dev.travisbrown.jacc.util.BitSet;
 
 /** Calculation of first sets.  The first set of a given nonterminal X
@@ -38,9 +39,9 @@ public final class First extends Analysis {
      */
     protected boolean analyze(int c) {
         boolean changed = false;
-        Grammar.Prod[] prods = grammar.getProds(c);
+        JaccProd[] prods = grammar.getProds(c);
         for (int k=0; k<prods.length; k++) {
-            int[] rhs = prods[k].getRhs();
+            int[] rhs = prods[k].getRhs(this.grammar);
             int   l   = 0;
             for (; l<rhs.length; l++) {
                 if (grammar.isTerminal(rhs[l])) {

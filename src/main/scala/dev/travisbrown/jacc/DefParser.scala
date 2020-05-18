@@ -21,82 +21,76 @@ object Definition {
 case class Production(name: String, alts: List[(List[String], Option[String])])
 
 case class GrammarDef(definitions: List[Definition], productions: List[Production], postCode: String) {
-  private val symbolList: List[(String, JaccSymbol)] = {
-    definitions.collect {
-      case Definition.Token(_, names) => names
-    }.flatten ++ productions.map(_.name) :+ "error"
-  }.map {
-    case name if name.startsWith("'") => (name, new JaccSymbol(name, name.charAt(1).toInt))
-    case name => (name, new JaccSymbol(name))
+  private val fixities: Map[String, Fixity] = definitions.foldLeft((Map.empty[String, Fixity], 0)) {
+    case ((fs, prec), Definition.Right(names)) => (fs ++ names.map((_, Fixity.right(prec))), prec + 1)
+    case ((fs, prec), Definition.Left(names)) => (fs ++ names.map((_, Fixity.left(prec))), prec + 1)
+    case (acc, _) => acc
+  }._1
+
+  private val nonTerminalTypes: Map[String, String] = definitions.flatMap {
+    case Definition.Type(Some(tpe), names) => names.map((_, tpe))
+    case _ => Nil
+  }.toMap
+
+  private val startSymbolName: Option[String] = definitions.collectFirst {
+    case Definition.Start(name) => name
   }
 
-  private val symbols: Map[String, JaccSymbol] = symbolList.toMap
+  private val Literal = "'(.)'".r
 
-  private var precedence = 0
-
-  definitions.collect {
-    case Definition.Right(names) =>
-      names.foreach(name => symbols(name).setFixity(Fixity.right(precedence)))
-      precedence += 1
-    case Definition.Left(names) =>
-      names.foreach(name => symbols(name).setFixity(Fixity.left(precedence)))
-      precedence += 1
-    case Definition.Type(Some(tpe), names) =>
-      names.foreach(name => symbols(name).setType(tpe))
-    case Definition.Token(Some(tpe), names) =>
-      names.foreach(name => symbols(name).setType(tpe))
-  }
-
-  val literals: List[JaccSymbol] = symbolList.sortBy(_._1).collect {
-    case (name, sym) if name.startsWith("'") => sym
-  }
-
-  private var tokenNo = 1
-
-  val terminals: List[JaccSymbol] = symbolList.sortBy(_._1).collect {
-    case (name, sym) if !name.startsWith("'") && !productions.map(_.name).contains(name) =>
-      while (literals.exists(_.getNum == tokenNo)) {
-        tokenNo += 1
-      }
-
-      sym.setNum(tokenNo)
-      tokenNo += 1
-      sym
-  }
-
-  val nonTerminals: List[JaccSymbol] = {
+  private val nonTerminals: List[JaccSymbol] = {
     var seqNo = 0
 
-    val prods = productions.map {
+    val prodSyms = productions.map {
       case Production(name, alts) =>
-        val sym = symbols(name)
-
-        alts.map {
+        val prods = alts.map {
           case (syms, action) =>
             seqNo += 1
+            new JaccProd(syms.toArray, seqNo, action)
+        }.toArray
 
-            sym.addProduction(new JaccProd(null, syms.map(symbols(_)).toArray, null, action.orNull, seqNo))
-        }
-
-        sym
+        JaccSymbol(name, -1, -1, None, nonTerminalTypes.get(name), prods)
     }
 
-    val startSym = definitions.collectFirst {
-      case Definition.Start(name) => symbols(name)
-    }.getOrElse(symbols(productions.head.name))
+    startSymbolName match {
+      case None => prodSyms.head :: prodSyms.tail.sortBy(_.name)
+      case Some(name) =>
+        val (List(start), rest) = prodSyms.partition(_.name == name)
 
-    startSym :: prods.filterNot(_.eq(startSym)).sortBy(_.getName)
+        start :: rest.sortBy(_.name)
+    }
   }
 
-  def getGrammar: Grammar = {
-    val arr: Array[Grammar.Symbol] = (nonTerminals ++ terminals ++ literals :+ new JaccSymbol("$end", 0)).toArray
-
-    arr.zipWithIndex.foreach {
-      case (sym: JaccSymbol, i) => sym.setTokenNo(i)
-      case _ =>
+  private val literals: List[JaccSymbol] = definitions.flatMap {
+    case Definition.Token(tpe, names) => names.collect {
+      case name @ Literal(c) => JaccSymbol(name, c.charAt(0).toInt, -1, fixities.get(name), tpe, Array.empty)
     }
+    case _ => Nil
+  }.sortBy(_.name)
 
-    new Grammar(arr, nonTerminals.map { case j: JaccSymbol => j.getProds }.toArray.asInstanceOf[Array[Array[Grammar.Prod]]])
+  private def getNextNum(n: Int): Int = if (literals.map(_.num).contains(n)) getNextNum(n + 1) else n
+
+  private val terminals: List[JaccSymbol] = (
+    definitions.flatMap {
+      case Definition.Token(tpe, names) => names.flatMap {
+        case name @ Literal(c) => None
+        case name => Some(JaccSymbol(name, -1, -1, fixities.get(name), tpe, Array.empty))
+      }
+      case _ => Nil
+    } :+ JaccSymbol("error", -1, -1, None, None, Array.empty)
+  ).foldLeft((List.empty[JaccSymbol], 1)) {
+    case ((acc, num), sym) =>
+      val nextNum = getNextNum(num)
+      (acc :+ sym.copy(num = nextNum), nextNum + 1)
+  }._1.sortBy(_.name)
+
+  lazy val getGrammar: Grammar = {
+    val arr: Array[JaccSymbol] =
+      (nonTerminals ++ terminals ++ literals :+ JaccSymbol("$end", 0, -1, None, None, Array.empty)).zipWithIndex.map {
+        case (sym, i) => sym.copy(tokenNo = i)
+      }.toArray
+
+    new Grammar(arr, nonTerminals.map(_.prods).toArray)
   }
 
   def updateSettings(settings: Settings): Settings = {
@@ -123,7 +117,7 @@ case class GrammarDef(definitions: List[Definition], productions: List[Productio
     fastparse.parse(input, GrammarDefParser.errorExamples(_)) match {
       case Parsed.Success(values, _) => values.flatMap {
         case (name, alts) => alts.map { alt =>
-          (name, alt.map(s => symbols(s).getTokenNo).toArray)
+          (name, alt.map(s => getGrammar.lookup(s).tokenNo).toArray)
         }
       }.asJava
     }
@@ -135,20 +129,6 @@ object GrammarDefParser {
 
   private implicit val whitespace: ParsingRun[_] => ParsingRun[Unit] =
     JavaWhitespace.whitespace.andThen(MultiLineWhitespace.whitespace)
-
-
-  def compare(g1: Grammar, g2: Grammar): Unit = {
-    def pp(p: Grammar.Prod): String = "{" + p.getLabel + ": " + p.getRhs.mkString(", ") + "}"
-    def ps(s: Grammar.Symbol): String = s match {
-      case js: JaccSymbol => s"[${js.getName} ${js.getNum} ${js.getTokenNo}]"
-    }
-
-    println(g1.symbols.map(ps).mkString(" "))
-    println(g2.symbols.map(ps).mkString(" "))
-
-    println(g1.prods.map(_.map(pp).mkString(" ")).mkString("\n"))
-    println(g2.prods.map(_.map(pp).mkString(" ")).mkString("\n"))
-  }
 
   def parseFile(path: String): GrammarDef = {
     val stream = new java.io.FileInputStream(path)

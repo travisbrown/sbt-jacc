@@ -115,7 +115,7 @@ public class ParserOutput extends Output {
 
         // find the error token and see if it was used
         for (errTok=numNTs; errTok<numSyms; errTok++) {
-            if (grammar.getSymbol(errTok).getName().equals("error")) {
+            if (grammar.getSymbol(errTok).name().equals("error")) {
                 break;
             }
         }
@@ -162,7 +162,7 @@ public class ParserOutput extends Output {
             defineState(out, 1, st);
         }
         for (int i=0; i<numNTs; i++) {
-            Grammar.Prod[] prods = grammar.getProds(i);
+            JaccProd[] prods = grammar.getProds(i);
             for (int j=0; j<prods.length; j++) {
                 defineReduce(out, 1, prods[j], i);
             }
@@ -404,7 +404,7 @@ public class ParserOutput extends Output {
                         if (idx[l]==numTs-1) {
                             out.print("ENDINPUT");
                         } else {
-                            out.print(grammar.getTerminal(idx[l]).getName());
+                            out.print(grammar.getTerminal(idx[l]).name());
                         }
                         out.println(":");
                     }
@@ -446,16 +446,16 @@ public class ParserOutput extends Output {
     /** Produce code to define a particular reduction.
      */
     private void defineReduce(PrintWriter out, int ind,
-                              Grammar.Prod prod, int nt) {
+                              JaccProd prod, int nt) {
         if (prod instanceof JaccProd && ntDefault[nt]>=0) {
             JaccProd jprod = (JaccProd)prod;
             indent(out, ind);
-            out.print("private int yyr" + jprod.getSeqNo() + "() { // ");
-            out.print(grammar.getSymbol(nt).getName() + " : ");
-            out.println(grammar.displaySymbols(jprod.getRhs(),
+            out.print("private int yyr" + jprod.seqNo() + "() { // ");
+            out.print(grammar.getSymbol(nt).name() + " : ");
+            out.println(grammar.displaySymbols(jprod.getRhs(this.grammar),
                                                "/* empty */", " "));
             String action = jprod.getAction();
-            int    n      = jprod.getRhs().length;
+            int    n      = jprod.getRhs(this.grammar).length;
             if (action!=null) {
                 indent(out, ind+1);
                 translateAction(out, jprod, action);
@@ -476,7 +476,7 @@ public class ParserOutput extends Output {
     private void translateAction(PrintWriter out,
                                  JaccProd jprod,
                                  String action) {
-        int[] rhs = jprod.getRhs();
+        int[] rhs = jprod.getRhs(this.grammar);
         int   len = action.length();
         for (int i=0; i<len; i++) {
             char c = action.charAt(i);
@@ -493,17 +493,13 @@ public class ParserOutput extends Output {
                         c = action.charAt(i + 1);
                     } while (Character.isDigit(c));
                     if (n<1 || n>rhs.length) {
-                        report(new Failure(jprod.getActionPos(),
+                        report(new Failure(null,
                                "$" + n + " cannot be used in this action."));
                     } else {
                         int symNo   = (1+ rhs.length) - n;
                         String type = null;
-                        if (grammar.getSymbol(rhs[n-1])
-                            instanceof JaccSymbol) {
-                            JaccSymbol jsym
-                                = (JaccSymbol)(grammar.getSymbol(rhs[n-1]));
-                            type = jsym.getType();
-                        }
+                        JaccSymbol jsym = grammar.getSymbol(rhs[n-1]);
+                        type = jsym.getType();
                         if (type!=null) {
                             out.print("((" + type + ")");
                         }
@@ -578,7 +574,7 @@ public class ParserOutput extends Output {
     /** Return a name for the nonterminal function for a given nt.
      */
     private String ntName(int nt) {
-        return "yyp" + grammar.getSymbol(nt).getName();
+        return "yyp" + grammar.getSymbol(nt).name();
     }
 
     /** Produce code to do error recovery.

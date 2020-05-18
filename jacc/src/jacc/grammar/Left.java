@@ -5,6 +5,7 @@
 
 package dev.travisbrown.jacc.grammar;
 
+import dev.travisbrown.jacc.JaccProd;
 import dev.travisbrown.jacc.util.BitSet;
 
 /** Calculation of left sets.  The left set of a nonterminal symbol X is
@@ -36,9 +37,9 @@ public final class Left extends Analysis {
      */
     protected boolean analyze(int c) {
         boolean changed = false;
-        Grammar.Prod[] prods = grammar.getProds(c);
+        JaccProd[] prods = grammar.getProds(c);
         for (int k=0; k<prods.length; k++) {
-            int[] rhs = prods[k].getRhs();
+            int[] rhs = prods[k].getRhs(this.grammar);
             if (rhs.length>0 && grammar.isNonterminal(rhs[0])) {
                 if (BitSet.addTo(left[c], left[rhs[0]])) {
                     changed = true;

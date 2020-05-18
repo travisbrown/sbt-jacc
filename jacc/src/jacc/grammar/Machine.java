@@ -5,6 +5,7 @@
 
 package dev.travisbrown.jacc.grammar;
 
+import dev.travisbrown.jacc.JaccProd;
 import dev.travisbrown.jacc.util.BitSet;
 import dev.travisbrown.jacc.util.IntSet;
 import dev.travisbrown.jacc.util.SCC;
@@ -210,9 +211,9 @@ public class Machine {
                 Iterator<Integer> nts = BitSet.iterator(leftnt, 0);
                 while (nts.hasNext()) {
                     int nt = nts.next();
-                    Grammar.Prod[] prods = grammar.getProds(nt);
+                    JaccProd[] prods = grammar.getProds(nt);
                     for (int i=0; i<prods.length; i++) {
-                        int[] rhs = prods[i].getRhs();
+                        int[] rhs = prods[i].getRhs(this.grammar);
                         int   nxt = items.getFirstKernel(nt, i);
                         if (rhs.length!=0) {
                             if (addValue(trans, rhs[0], nxt)) {

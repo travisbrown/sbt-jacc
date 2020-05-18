@@ -48,7 +48,7 @@ public class TextOutput extends Output {
                 int xj = idx[j];
                 if (def<0 || action[xj]!=action[def] || arg[xj]!=arg[def]) {
                     indent(out, 1);
-                    out.print(grammar.getTerminal(xj).getName());
+                    out.print(grammar.getTerminal(xj).name());
                     out.print(' ');
                     out.println(describeAction(i, action[xj], arg[xj]));
                 }
@@ -69,7 +69,7 @@ public class TextOutput extends Output {
                     int sym = machine.getEntry(ts[j]);
                     int st  = ts[j];
                     indent(out, 1);
-                    out.print(grammar.getSymbol(sym).getName());
+                    out.print(grammar.getSymbol(sym).name());
                     out.println(" " + describeGoto(st));
                 }
                 out.println();
@@ -91,9 +91,9 @@ public class TextOutput extends Output {
                 boolean[] used = tables.getProdsUsedAt(nt);
                 for (int j=0; j<used.length; j++) {
                     if (!used[j]) {
-                        int[] rhs = grammar.getProds(nt)[j].getRhs();
+                        int[] rhs = grammar.getProds(nt)[j].getRhs(this.grammar);
                         out.print("Rule not reduced: ");
-                        out.print(grammar.getNonterminal(nt).getName());
+                        out.print(grammar.getNonterminal(nt).name());
                         out.print(" : ");
                         out.println(grammar.displaySymbols(rhs, "", " "));
                     }
