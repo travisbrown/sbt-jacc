@@ -5,6 +5,8 @@
 
 package dev.travisbrown.jacc.grammar;
 
+import dev.travisbrown.jacc.JaccProd;
+
 /** Used to build a set of LR0 items for a grammar, including two extra
  *  items that are used to describe the corresponding augmented grammar.
  */
@@ -21,10 +23,10 @@ public class LR0Items {
         numItems     = 2;               // Number of special items
         firstKernel  = new int[numNTs][];
         for (int i=0; i<numNTs; i++) {
-            Grammar.Prod[] prods = grammar.getProds(i);
+            JaccProd[] prods = grammar.getProds(i);
             firstKernel[i]       = new int[prods.length];
             for (int j=0; j<prods.length; j++) {
-                int len           = prods[j].getRhs().length;
+                int len           = prods[j].getRhs(this.grammar).length;
                 firstKernel[i][j] = numItems;
                 numItems         += (len==0 ? 1 : len);
             }
@@ -34,9 +36,9 @@ public class LR0Items {
         new Item(-1,0,0);                   // Represents S' -> _ S $
         new Item(-1,0,1);                   // Represents S' -> S _ $
         for (int i=0; i<numNTs; i++) {
-            Grammar.Prod[] prods = grammar.getProds(i);
+            JaccProd[] prods = grammar.getProds(i);
             for (int j=0; j<prods.length; j++) {
-                int[] rhs = prods[j].getRhs();
+                int[] rhs = prods[j].getRhs(this.grammar);
                 for (int k=1; k<rhs.length; k++) {
                     new Item(i, j, k);
                 }
@@ -142,12 +144,12 @@ public class LR0Items {
          *  for the production in this item.
          */
         public int getSeqNo() {
-            return getProd().getSeqNo();
+            return getProd().seqNo();
         }
 
         /** Return the body of the underlying production.
          */
-        public Grammar.Prod getProd() {
+        public JaccProd getProd() {
             return grammar.getProds(lhs)[prodNo];
         }
 
@@ -169,7 +171,7 @@ public class LR0Items {
             if (lhs<0) {
                 return (pos==0);
             } else {
-                return (pos!=getProd().getRhs().length);
+                return (pos!=getProd().getRhs(LR0Items.this.grammar).length);
             }
         }
 
@@ -178,7 +180,7 @@ public class LR0Items {
          *  the special case treatment of S' -> S _ $.
          */
         public boolean canReduce() {
-            return (lhs>=0) && (pos==getProd().getRhs().length);
+            return (lhs>=0) && (pos==getProd().getRhs(LR0Items.this.grammar).length);
         }
 
         /** Determine if this item can shift the $ end marker to accept.
@@ -207,7 +209,7 @@ public class LR0Items {
          */
         public int getNextSym() {
             if (lhs>=0) {
-                return grammar.getProds(lhs)[prodNo].getRhs()[pos];
+                return grammar.getProds(lhs)[prodNo].getRhs(LR0Items.this.grammar)[pos];
             } else {
                 return 0;                   // the start symbol
             }
@@ -228,8 +230,8 @@ public class LR0Items {
             }
             out.print(grammar.getSymbol(lhs));
             out.print(" : ");
-            Grammar.Prod prod = grammar.getProds(lhs)[prodNo];
-            int[]        rhs  = prod.getRhs();
+            JaccProd prod = grammar.getProds(lhs)[prodNo];
+            int[]        rhs  = prod.getRhs(LR0Items.this.grammar);
             out.print(grammar.displaySymbols(rhs, 0, pos, "", " "));
             out.print("_");
             if (pos<rhs.length) {

@@ -5,6 +5,8 @@
 
 package dev.travisbrown.jacc.grammar;
 
+import dev.travisbrown.jacc.JaccProd;
+import dev.travisbrown.jacc.JaccSymbol;
 import dev.travisbrown.jacc.util.SCC;
 import dev.travisbrown.jacc.util.BitSet;
 import java.util.Iterator;
@@ -12,60 +14,23 @@ import java.util.Iterator;
 /** A representation for context free grammars.
  */
 public class Grammar {
-    /** Representation for symbols.  Subclass to add types, precedences,
-     *  line nos, etc.
-     */
-    public static class Symbol {
-        protected String name;
-        public Symbol(String name) {
-            this.name = name;
-        }
-        public String getName() {
-            return name;
-        }
-        public String toString() {
-            return name;
-        }
-    }
-
-    /** Representation for productions.  Subclass to add actions,
-     *  precedences, etc.
-     */
-    public static class Prod {
-        protected int[] rhs;
-        private   int   seqNo;
-        public Prod(int[] rhs, int seqNo) {
-            this.rhs   = rhs;
-            this.seqNo = seqNo;
-        }
-        public int[] getRhs() {
-            return rhs;
-        }
-        public int getSeqNo() {
-            return seqNo;
-        }
-        public String getLabel() {
-            return null;
-        }
-    }
 
     /** The set of symbols in this grammar.  The 0th entry is the start
      *  symbol, and the last entry is the endmarker.  Nonterminals occupy
      *  the initial portion of the array, while terminals go in the tail
      *  portion.
      */
-    public final Symbol[]  symbols;
+    public final JaccSymbol[]  symbols;
 
     /** The set of productions for this grammar.
      */
-    public final Prod[][]  prods;
+    public final JaccProd[][]  prods;
 
     /** Constructor for a grammar object; raises an exception if invalid
      *  parameter values are passed in.
      */
-    public Grammar(Symbol[] symbols, Prod[][] prods)
+    public Grammar(JaccSymbol[] symbols, JaccProd[][] prods)
       throws Exception {
-        validate(symbols, prods);
         this.symbols = symbols;
         numSyms      = symbols.length;
         this.prods   = prods;
@@ -73,6 +38,7 @@ public class Grammar {
         numTs        = numSyms - numNTs;
         calcDepends();
         comps        = SCC.get(depends, revdeps,numNTs);
+        validate(symbols, prods);
     }
 
     /** Records the total number of symbols for this grammar.
@@ -113,31 +79,31 @@ public class Grammar {
 
     /** Get the symbol object corresponding to a particular index.
      */
-    public Symbol getSymbol(int i) {
+    public JaccSymbol getSymbol(int i) {
         return symbols[i];
     }
 
     /** Get the start symbol for this grammar.
      */
-    public Symbol getStart() {
+    public JaccSymbol getStart() {
         return symbols[0];
     }
 
     /** Get the end symbol for this grammar.
      */
-    public Symbol getEnd() {
+    public JaccSymbol getEnd() {
         return symbols[numSyms-1];
     }
 
     /** Get the nonterminal object corresponding to a particular index.
      */
-    public Symbol getNonterminal(int i) {
+    public JaccSymbol getNonterminal(int i) {
         return symbols[i];
     }
 
     /** Get the terminal object corresponding to a particular index.
      */
-    public Symbol getTerminal(int i) {
+    public JaccSymbol getTerminal(int i) {
         return symbols[numNTs+i];
     }
 
@@ -165,7 +131,7 @@ public class Grammar {
 
     /** Get productions for a given nonterminal index in this grammar.
      */
-    public Prod[] getProds(int i) {
+    public JaccProd[] getProds(int i) {
         return prods[i];
     }
 
@@ -177,11 +143,20 @@ public class Grammar {
         return comps;
     }
 
+    public JaccSymbol lookup(String name) {
+        for (int i = 0; i < symbols.length; i++) {
+            if (symbols[i].name().equals(name)) {
+                return symbols[i];
+            }
+        }
+        return null;
+    }
+
     /** Validate a given set of symbols and productions.  This function
      *  allows a user to test a potential set of arguments for the Grammar
      *  constructor without actually attempting to build the grammar.
      */
-    public static void validate(Symbol[] symbols, Prod[][] prods)
+    private void validate(JaccSymbol[] symbols, JaccProd[][] prods)
       throws Exception {
         //-----------------------------------------------------------------
         // Validate symbols:
@@ -214,7 +189,7 @@ public class Grammar {
                                     " (number " + i + ") has no productions");
             }
             for (int j=0; j<prods[i].length; j++) {
-                int[] rhs = prods[i][j].getRhs();
+                int[] rhs = prods[i][j].getRhs(this);
                 if (rhs==null) {
                     throw new Exception("Production " +
                                         j + " for symbol " + symbols[i] +
@@ -257,7 +232,7 @@ public class Grammar {
         for (int i=0; i<numNTs; i++) {
             BitSet.clear(nts);
             for (int j=0; j<prods[i].length; j++) {
-                int[] rhs = prods[i][j].getRhs();
+                int[] rhs = prods[i][j].getRhs(this);
                 for (int k=0; k<rhs.length; k++) {
                     if (isNonterminal(rhs[k])) {
                         BitSet.set(deps[rhs[k]], i);
@@ -349,10 +324,10 @@ public class Grammar {
      */
     public void display(java.io.PrintWriter out) {
         for (int i=0; i<numNTs; i++) {
-            out.println(symbols[i].getName());
+            out.println(symbols[i].name());
             String punc = " = ";
             for (int j=0; j<prods[i].length; j++) {
-                int[] rhs = prods[i][j].getRhs();
+                int[] rhs = prods[i][j].getRhs(this);
                 out.print(punc);
                 out.print(displaySymbols(rhs, "/* empty */", " "));
                 out.println();
@@ -421,10 +396,10 @@ public class Grammar {
             return empty;
         } else {
             StringBuffer buf = new StringBuffer();
-            buf.append(symbols[syms[lo]].getName());
+            buf.append(symbols[syms[lo]].name());
             for (int k=lo+1; k<hi; k++) {
                 buf.append(between);
-                buf.append(symbols[syms[k]].getName());
+                buf.append(symbols[syms[k]].name());
             }
             return buf.toString();
         }
@@ -440,7 +415,7 @@ public class Grammar {
             if (count++ != 0) {
                 buf.append(", ");
             }
-            buf.append(symbols[mems.next()].getName());
+            buf.append(symbols[mems.next()].name());
         }
         return buf.toString();
     }

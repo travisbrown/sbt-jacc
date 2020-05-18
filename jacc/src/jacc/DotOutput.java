@@ -29,7 +29,7 @@ public class DotOutput extends Output {
         for (int i=0; i<dsts.length; i++) {
             int    dst = dsts[i];
             int    sym = machine.getEntry(dst);
-            String txt = grammar.getSymbol(sym).getName();
+            String txt = grammar.getSymbol(sym).name();
             out.println(stateName(st) + " -> " + stateName(dst)
                      +"[label=\"" + txt + "\"];");
         }

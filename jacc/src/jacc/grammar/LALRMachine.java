@@ -147,7 +147,7 @@ public class LALRMachine extends LookaheadMachine {
             int           lhs = it.getLhs();
             int           pos = it.getPos();
             if (lhs>=0) {
-                int[] rhs = it.getProd().getRhs();
+                int[] rhs = it.getProd().getRhs(this.grammar);
                 if (pos>0 && rhs[--pos]==nt) {
                     if (calcFirsts(fs, it).canReduce()) {
                         findTargets(ts, st, lhs, rhs, pos);
@@ -238,7 +238,7 @@ public class LALRMachine extends LookaheadMachine {
             for (int j=0; j<rs.length; j++) {
                 LR0Items.Item it = items.getItem(its.at(rs[j]));
                 int   lhs        = it.getLhs();
-                int[] rhs        = it.getProd().getRhs();
+                int[] rhs        = it.getProd().getRhs(this.grammar);
                 int[] lookahead  = BitSet.make(numTs);
                 lookBack(lookahead, st, lhs, rhs, rhs.length);
                 laReds[st][j]    = lookahead;

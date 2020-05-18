@@ -5,6 +5,8 @@
 
 package dev.travisbrown.jacc.grammar;
 
+import dev.travisbrown.jacc.JaccProd;
+
 /** Calculation of finitaryness.  A nonterminal is finitary if it derives
  *  a finite string of terminal symbols.  If X -> a1 ... an is a production
  *  then:
@@ -41,9 +43,9 @@ final public class Finitary extends Analysis {
         boolean changed = false;
         if (consider[c]) {
             int blocked = 0;
-            Grammar.Prod[] prods = grammar.getProds(c);
+            JaccProd[] prods = grammar.getProds(c);
             for (int k=0; k<prods.length; k++) {
-                int[] rhs = prods[k].getRhs();
+                int[] rhs = prods[k].getRhs(this.grammar);
                 int   l   = 0;
                 while (l<rhs.length && this.at(rhs[l])) {
                     l++;
@@ -81,7 +83,7 @@ final public class Finitary extends Analysis {
                 if (count>0) {
                     out.print(", ");
                 }
-                out.print(grammar.getSymbol(i).getName());
+                out.print(grammar.getSymbol(i).name());
                 count++;
             }
         }

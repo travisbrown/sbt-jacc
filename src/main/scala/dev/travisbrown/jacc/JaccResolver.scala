@@ -44,12 +44,12 @@ class JaccResolver(machine: LookaheadMachine) extends Resolver {
 
     (sym, prod) match {
       case (jSym: JaccSymbol, jProd: JaccProd) =>
-        if (jSym.getFixity.eq(null) || jProd.getFixity.eq(null)) {
+        if (jSym.fixity.isEmpty || jProd.fixity(grammar).isEmpty) {
           conflicts(st) = Conflicts.sr(tables.getArgAt(st)(tok), redNo, sym, conflicts(st))
           numSRConflicts += 1
           return
         }
-        Fixity.order.tryCompare(jProd.getFixity, jSym.getFixity) match {
+        Fixity.order.tryCompare(jProd.fixity(grammar).get, jSym.fixity.get) match {
           case Some(x) if x > 0 => tables.setReduce(st, tok, redNo)
           case Some(_)          => ()
           case None =>
@@ -73,7 +73,7 @@ class JaccResolver(machine: LookaheadMachine) extends Resolver {
     val prod = items.getItem(its.at(redNo)).getProd()
     val sym = grammar.getTerminal(tok)
 
-    if (prod.getSeqNo < prod0.getSeqNo) {
+    if (prod.seqNo < prod0.seqNo) {
       tables.setReduce(st, tok, redNo)
     }
 

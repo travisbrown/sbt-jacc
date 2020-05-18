@@ -143,7 +143,7 @@ public class Parser {
      */
     private void reduce(int arg) {
         LR0Items.Item it = machine.reduceItem(state, arg);
-        int           n  = it.getProd().getRhs().length;
+        int           n  = it.getProd().getRhs(grammar).length;
         if (n>0) {
             for (; n>1; n--) {
                 stack = stack.pop();
