@@ -8,8 +8,9 @@ package dev.travisbrown.jacc.grammar;
 import dev.travisbrown.jacc.JaccProd;
 import dev.travisbrown.jacc.JaccSymbol;
 import dev.travisbrown.jacc.util.SCC;
-import dev.travisbrown.jacc.util.BitSet;
 import java.util.Iterator;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /** A representation for context free grammars.
  */
@@ -213,20 +214,23 @@ public class Grammar {
      *  grammar.
      */
     private int[][] calcDepends() {
-        int[]   nts  = BitSet.make(numNTs);
         int[][] depends      = new int[numNTs][];
 
         for (int i=0; i<numNTs; i++) {
-            BitSet.clear(nts);
+            SortedSet<Integer>   nts  = new TreeSet<>();
             for (int j=0; j<prods[i].length; j++) {
                 int[] rhs = prods[i][j].getRhs(this);
                 for (int k=0; k<rhs.length; k++) {
                     if (isNonterminal(rhs[k])) {
-                        BitSet.set(nts, rhs[k]);
+                        nts.add(rhs[k]);
                     }
                 }
             }
-            depends[i] = BitSet.members(nts);
+            depends[i] = new int[nts.size()];
+            Iterator<Integer> it = nts.iterator();
+            for (int j = 0; j < nts.size(); j++) {
+                depends[i][j] = it.next();
+            }
         }
 
         return depends;
@@ -376,10 +380,10 @@ public class Grammar {
 
     /** Output a set of symbols from a bitset.
      */
-    public String displaySymbolSet(int[] s, int offset) {
+    public String displaySymbolSet(SortedSet<Integer> s, int offset) {
         StringBuffer buf = new StringBuffer();
         int count        = 0;
-        Iterator<Integer> mems   = BitSet.iterator(s, offset);
+        Iterator<Integer> mems   = s.stream().filter(e -> e >= offset).iterator();
         while (mems.hasNext()) {
             if (count++ != 0) {
                 buf.append(", ");

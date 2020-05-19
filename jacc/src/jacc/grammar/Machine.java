@@ -6,7 +6,6 @@
 package dev.travisbrown.jacc.grammar;
 
 import dev.travisbrown.jacc.JaccProd;
-import dev.travisbrown.jacc.util.BitSet;
 import dev.travisbrown.jacc.util.SCC;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -186,12 +185,11 @@ public class Machine {
         stateSets.add(new TreeSet<>(Arrays.asList(items.getStartItem())));
         entry.add(0);
 
-        int[]    leftnt   = BitSet.make(numNTs);
 
         for (int head = 0; head<entry.size(); head++) {
             Map<Integer, SortedSet<Integer>> trans    = new HashMap<>();
             SortedSet<Integer> kernel = stateSets.get(head);
-            BitSet.clear(leftnt);
+            SortedSet<Integer> leftnt = new TreeSet<>();
 
             // Calculate transitions for (the closure of) the
             // kernel of this state.  Start with items in the
@@ -204,7 +202,7 @@ public class Machine {
                     int sym = it.getNextSym();
                     int nxt = it.getNextItem();
                     if (grammar.isNonterminal(sym)) {
-                        BitSet.addTo(leftnt, left.at(sym));
+                        leftnt.addAll(left.at(sym));
                     }
                     addValue(trans, sym, nxt);
                 }
@@ -213,8 +211,8 @@ public class Machine {
             // Now continue with initial items for the nonterminals
             // recorded in nts.
 
-            if (!BitSet.isEmpty(leftnt)) {
-                Iterator<Integer> nts = BitSet.iterator(leftnt, 0);
+            if (!leftnt.isEmpty()) {
+                Iterator<Integer> nts = leftnt.iterator();
                 while (nts.hasNext()) {
                     int nt = nts.next();
                     JaccProd[] prods = grammar.getProds(nt);

@@ -7,8 +7,10 @@ package dev.travisbrown.jacc.util;
 
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 /** An implementation of the strongly connected components algorithm.
@@ -37,11 +39,11 @@ public class SCC {
     private static abstract class DepthFirst {
         private   final Iterator<Integer> seq;
         protected final int[][]   adjs;
-        private   final int[]     visited;
+        private   final Set<Integer> visited;
         DepthFirst(Iterator<Integer> seq, int[][] adjs) {
             this.seq  = seq;
             this.adjs = adjs;
-            visited   = BitSet.make(adjs.length);
+            visited   = new HashSet<Integer>();
         }
 
         protected void search() {
@@ -53,7 +55,7 @@ public class SCC {
         }
 
         private boolean visit(int i) {
-            if (BitSet.addTo(visited,i)) {
+            if (visited.add(i)) {
                 int[] adj = adjs[i];
                 for (int j=0; j<adj.length; j++) {
                     visit(adj[j]);

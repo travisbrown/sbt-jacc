@@ -5,7 +5,6 @@
 
 package dev.travisbrown.jacc.grammar;
 
-import dev.travisbrown.jacc.util.BitSet;
 import dev.travisbrown.jacc.util.SCC;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +54,7 @@ public class LALRMachine extends LookaheadMachine {
 
     /** Records the lookahead sets for each goto.
      */
-    private int[][] gotoLA;
+    private SortedSet<Integer>[] gotoLA;
 
     /** Records the target set for each goto.
      */
@@ -64,11 +63,11 @@ public class LALRMachine extends LookaheadMachine {
     /** Records the lookahead sets for reduce items.  Lookahead sets are
      *  stored in the order specified by Machine.getReducesAt().
      */
-    private int[][][] laReds;
+    private SortedSet<Integer>[][] laReds;
 
     /** Return lookahead sets for the reductions at a given state.
      */
-    public int[] getLookaheadAt(int st, int i) {
+    public SortedSet<Integer> getLookaheadAt(int st, int i) {
         return laReds[st][i];
     }
 
@@ -97,7 +96,7 @@ public class LALRMachine extends LookaheadMachine {
 
         // Now we calculate the targets and the immediate first
         // sets for each goto.
-        gotoLA      = new int[numGotos][];
+        gotoLA      = new SortedSet[numGotos];
         gotoTargets = new int[numGotos][];
         for (int g=0; g<numGotos; g++) {
             calcTargets(g);
@@ -116,7 +115,7 @@ public class LALRMachine extends LookaheadMachine {
                 for (int i=0; i<comp.length; i++) {
                     int[] ts = gotoTargets[comp[i]];
                     for (int j=0; j<ts.length; j++) {
-                        if (BitSet.addTo(gotoLA[comp[i]], gotoLA[ts[j]])) {
+                        if (gotoLA[comp[i]].addAll(gotoLA[ts[j]])) {
                             changed = true;
                         }
                     }
@@ -143,8 +142,8 @@ public class LALRMachine extends LookaheadMachine {
         int    nt  = getEntry(st1);
         List<Integer> its = new ArrayList<>(getItemsAt(st1));
         int    sz  = its.size();
-        int[]  fs  = BitSet.make(numTs);
-        SortedSet<Integer> ts  = new TreeSet<>();
+        SortedSet<Integer> fs = new TreeSet<>();
+        SortedSet<Integer> ts = new TreeSet<>();
         for (int j=0; j<sz; j++) {
             LR0Items.Item it  = items.getItem(its.get(j));
             int           lhs = it.getLhs();
@@ -157,7 +156,7 @@ public class LALRMachine extends LookaheadMachine {
                     }
                 }
             } else if (pos>0) {
-                BitSet.set(fs, numTs-1);
+                fs.add(numTs-1);
             }
         }
         gotoLA[g]      = fs;
@@ -182,14 +181,14 @@ public class LALRMachine extends LookaheadMachine {
      *             to the right of the _ mark in the specified item.
      *  @param it  An item of the grammar.
      */
-    private LR0Items.Item calcFirsts(int[] fs, LR0Items.Item it) {
+    private LR0Items.Item calcFirsts(SortedSet<Integer> fs, LR0Items.Item it) {
         while (it.canGoto()) {
             int sym = it.getNextSym();
             if (grammar.isTerminal(sym)) {
-                BitSet.addTo(fs,sym-numNTs);
+                fs.add(sym-numNTs);
                 break;
             } else {
-                BitSet.union(fs, first.at(sym));
+                fs.addAll(first.at(sym));
                 if (!nullable.at(sym)) {
                     break;
                 }
@@ -197,7 +196,7 @@ public class LALRMachine extends LookaheadMachine {
             }
         }
         if (it.canAccept()) {
-            BitSet.set(fs,numTs-1);
+            fs.add(numTs-1);
         }
         return it;
     }
@@ -240,16 +239,16 @@ public class LALRMachine extends LookaheadMachine {
     private void calcLookahead() {
         // Fill out the entries of laRed to record lookaheads for
         // reduce items in individual states.
-        laReds = new int[entry.size()][][];
+        laReds = new SortedSet[entry.size()][];
         for (int st=0; st<entry.size(); st++) {
             int[]  rs  = getReducesAt(st);
             List<Integer> its = new ArrayList<>(getItemsAt(st));
-            laReds[st] = new int[rs.length][];
+            laReds[st] = new SortedSet[rs.length];
             for (int j=0; j<rs.length; j++) {
                 LR0Items.Item it = items.getItem(its.get(rs[j]));
                 int   lhs        = it.getLhs();
                 int[] rhs        = it.getProd().getRhs(this.grammar);
-                int[] lookahead  = BitSet.make(numTs);
+                SortedSet<Integer> lookahead = new TreeSet<>();
                 lookBack(lookahead, st, lhs, rhs, rhs.length);
                 laReds[st][j]    = lookahead;
             }
@@ -268,12 +267,12 @@ public class LALRMachine extends LookaheadMachine {
      *             that we have found our way back to a state
      *             that (potentially) contains a relevant goto.
      */
-    private void lookBack(int[] la, int st, int lhs, int[] rhs, int pos) {
+    private void lookBack(SortedSet<Integer> la, int st, int lhs, int[] rhs, int pos) {
         if (pos==0) {
             int[] gotos = getGotosAt(st);
             for (int i=0; i<gotos.length; i++) {
                 if (getEntry(gotos[i])==lhs) {
-                    BitSet.union(la, gotoLA[stateFirstGoto[st]+i]);
+                    la.addAll(gotoLA[stateFirstGoto[st]+i]);
                     return;
                 }
             }

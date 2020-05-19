@@ -6,7 +6,8 @@
 package dev.travisbrown.jacc.grammar;
 
 import dev.travisbrown.jacc.JaccProd;
-import dev.travisbrown.jacc.util.BitSet;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /** Calculation of first sets.  The first set of a given nonterminal X
  *  is the set of all terminal symbols that can appear at the beginning
@@ -17,7 +18,7 @@ public final class First extends Analysis {
     private final Nullable nullable;
     private final int      numNTs;
     private final int      numTs;
-    private final int[][]  first;
+    private final SortedSet<Integer>[]  first;
 
     /** Construct a first set analysis for a given grammar.
      */
@@ -27,9 +28,9 @@ public final class First extends Analysis {
         this.nullable = nullable;
         this.numNTs   = grammar.getNumNTs();
         this.numTs    = grammar.getNumTs();
-        first         = new int[numNTs][];
+        first         = new SortedSet[numNTs];
         for (int i=0; i<numNTs; i++) {
-            first[i] = BitSet.make(numTs);
+            first[i] = new TreeSet<>();
         }
         bottomUp();
     }
@@ -45,12 +46,12 @@ public final class First extends Analysis {
             int   l   = 0;
             for (; l<rhs.length; l++) {
                 if (grammar.isTerminal(rhs[l])) {
-                    if (BitSet.addTo(first[c], rhs[l] - numNTs)) {
+                    if (first[c].add(rhs[l] - numNTs)) {
                         changed = true;
                     }
                     break;
                 } else {
-                    if (BitSet.addTo(first[c], first[rhs[l]])) {
+                    if (first[c].addAll(first[rhs[l]])) {
                         changed = true;
                     }
                     if (!nullable.at(rhs[l])) {
@@ -64,7 +65,7 @@ public final class First extends Analysis {
 
     /** Return a bitset of the first symbols for a given nonterminal.
      */
-    public int[] at(int i) {
+    public SortedSet<Integer> at(int i) {
         return first[i];
     }
 

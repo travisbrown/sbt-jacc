@@ -6,7 +6,8 @@
 package dev.travisbrown.jacc.grammar;
 
 import dev.travisbrown.jacc.JaccProd;
-import dev.travisbrown.jacc.util.BitSet;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /** Calculation of left sets.  The left set of a nonterminal symbol X is
  *  the set of all nonterminals Y such that X derives a string of the form
@@ -16,7 +17,7 @@ import dev.travisbrown.jacc.util.BitSet;
 public final class Left extends Analysis {
     private final Grammar  grammar;
     private final int      numNTs;
-    private final int[][]  left;
+    private final SortedSet<Integer>[]  left;
 
     /** Construct a left set analysis for a given grammar.
      */
@@ -24,10 +25,10 @@ public final class Left extends Analysis {
         super(grammar.getComponents());
         this.grammar  = grammar;
         this.numNTs   = grammar.getNumNTs();
-        left          = new int[numNTs][];
+        left          = new SortedSet[numNTs];
         for (int i=0; i<numNTs; i++) {
-            left[i] = BitSet.make(numNTs);
-            BitSet.set(left[i],i);
+            left[i] = new TreeSet<>();
+            left[i].add(i);
         }
         bottomUp();
     }
@@ -41,7 +42,7 @@ public final class Left extends Analysis {
         for (int k=0; k<prods.length; k++) {
             int[] rhs = prods[k].getRhs(this.grammar);
             if (rhs.length>0 && grammar.isNonterminal(rhs[0])) {
-                if (BitSet.addTo(left[c], left[rhs[0]])) {
+                if (left[c].addAll(left[rhs[0]])) {
                     changed = true;
                 }
             }
@@ -51,7 +52,7 @@ public final class Left extends Analysis {
 
     /** Return a bitset of the left symbols for a given nonterminal.
      */
-    public int[] at(int i) {
+    public SortedSet<Integer> at(int i) {
         return left[i];
     }
 

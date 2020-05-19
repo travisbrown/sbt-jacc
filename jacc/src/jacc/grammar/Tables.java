@@ -5,7 +5,6 @@
 
 package dev.travisbrown.jacc.grammar;
 
-import dev.travisbrown.jacc.util.BitSet;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -161,7 +160,7 @@ public class Tables {
         }
         // Enter reduces into table.
         for (int i=0; i<rs.length; i++) {
-            Iterator<Integer> bts = BitSet.iterator(machine.getLookaheadAt(st,i), 0);
+            Iterator<Integer> bts = machine.getLookaheadAt(st,i).iterator();
             while (bts.hasNext()) {
                 int tok = bts.next();
                 switch (action[st][tok]) {

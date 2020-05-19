@@ -6,7 +6,8 @@
 package dev.travisbrown.jacc.grammar;
 
 import dev.travisbrown.jacc.JaccProd;
-import dev.travisbrown.jacc.util.BitSet;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /** Calculation of follow sets.  The follow set of a given nonterminal X
  *  is the set of all terminal symbols that can appear immediately after
@@ -19,7 +20,7 @@ public final class Follow extends Analysis {
     private final First    first;
     private final int      numNTs;
     private final int      numTs;
-    private final int[][]  follow;
+    private final SortedSet<Integer>[]  follow;
 
     /** Construct a follow set analysis for a given grammar.
      */
@@ -30,11 +31,11 @@ public final class Follow extends Analysis {
         this.first    = first;
         this.numNTs   = grammar.getNumNTs();
         this.numTs    = grammar.getNumTs();
-        follow        = new int[numNTs][];
+        follow        = new SortedSet[numNTs];
         for (int i=0; i<numNTs; i++) {
-            follow[i] = BitSet.make(numTs);
+            follow[i] = new TreeSet<>();
         }
-        BitSet.set(follow[0], numTs-1);
+        follow[0].add(numTs-1);
         topDown();
     }
 
@@ -52,13 +53,12 @@ public final class Follow extends Analysis {
                     int m = l+1;
                     for (; m<rhs.length; m++) {
                         if (grammar.isTerminal(rhs[m])) {
-                            if (BitSet.addTo(follow[rhs[l]], rhs[m]-numNTs)) {
+                            if (follow[rhs[l]].add(rhs[m]-numNTs)) {
                                 changed = true;
                             }
                             break;
                         } else {
-                            if (BitSet.addTo(follow[rhs[l]],
-                                             first.at(rhs[m]))) {
+                            if (follow[rhs[l]].addAll(first.at(rhs[m]))) {
                                 changed = true;
                             }
                             if (!nullable.at(rhs[m])) {
@@ -67,7 +67,7 @@ public final class Follow extends Analysis {
                         }
                     }
                     if (m>=rhs.length) {
-                        if (BitSet.addTo(follow[rhs[l]], follow[c])) {
+                        if (follow[rhs[l]].addAll(follow[c])) {
                             changed = true;
                         }
                     }
@@ -79,7 +79,7 @@ public final class Follow extends Analysis {
 
     /** Return a bitset of the follow symbols for a given nonterminal.
      */
-    public int[] at(int i) {
+    public SortedSet<Integer> at(int i) {
         return follow[i];
     }
 
