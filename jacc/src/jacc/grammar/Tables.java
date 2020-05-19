@@ -5,9 +5,10 @@
 
 package dev.travisbrown.jacc.grammar;
 
-import dev.travisbrown.jacc.util.IntSet;
 import dev.travisbrown.jacc.util.BitSet;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /** Describes the construction of parse tables for a given machine, using
  *  lookahead information to help avoid shift/reduce conflicts.
@@ -179,7 +180,7 @@ public class Tables {
 
         // Register which productions are actually used
         LR0Items items = machine.getItems();
-        IntSet   its   = machine.getItemsAt(st);
+        List<Integer>   its   = new ArrayList<>(machine.getItemsAt(st));
         for (int i=0; i<rs.length; i++) {
             for (int j=0; j<numTs; j++) {
                 if (action[st][j]==REDUCE && arg[st][j]==rs[i]) {
@@ -187,7 +188,7 @@ public class Tables {
                     // will be used at least once ... however, it is
                     // possible that uses of a reduce step in the machine
                     // have been eliminated when a conflict was resolved.
-                    LR0Items.Item it = items.getItem(its.at(rs[i]));
+                    LR0Items.Item it = items.getItem(its.get(rs[i]));
                     int lhs    = it.getLhs();
                     int prodNo = it.getProdNo();
                     if (!prodUsed[lhs][prodNo]) {

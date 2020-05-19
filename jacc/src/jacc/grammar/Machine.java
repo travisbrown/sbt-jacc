@@ -7,9 +7,15 @@ package dev.travisbrown.jacc.grammar;
 
 import dev.travisbrown.jacc.JaccProd;
 import dev.travisbrown.jacc.util.BitSet;
-import dev.travisbrown.jacc.util.IntSet;
 import dev.travisbrown.jacc.util.SCC;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /** A representation for basic shift/reduce machines built using LR(0)
  *  items.
@@ -43,32 +49,28 @@ public class Machine {
      */
     protected final LR0Items items;
 
-    /** Counts the number of states in the machine.
-     */
-    protected int numStates;
-
     /** Holds the sets of kernel items in any given state.  Null reductions
      *  are added in once the machine has been built.
      */
-    protected IntSet[] stateSets;
+    protected List<SortedSet<Integer>> stateSets;
 
     /** Holds the entry symbol for the state.  Because of the way that
      *  our machines are built, all entries into any given state are by
      *  a transition on a particular, fixed symbol.
      */
-    protected int[] entry;
+    protected List<Integer> entry;
 
     /** Records the null reduction items that are encountered while exploring
      *  this state.  Null reductions are reductions corresponding to items of
      *  the form A -> _, which are not kernel items, but must be included in
      *  the finished machine.
      */
-    private IntSet[] nullReds;
+    private Map<Integer, SortedSet<Integer>> nullReds;
 
     /** Records the states that can reached by a single step from each state.
      */
 
-    protected int[][] succState;
+    protected Map<Integer, int[]> succState;
 
     /** Records the gotos for nonterminals in each state.
      */
@@ -91,7 +93,7 @@ public class Machine {
     /** Return the number of states in this machine.
      */
     public int getNumStates() {
-        return numStates;
+        return entry.size();
     }
 
     /** Return the LR0Items that were used to construct this machine.
@@ -104,19 +106,26 @@ public class Machine {
      *  a particular state.
      */
     public LR0Items.Item reduceItem(int st, int redNo) {
-        return items.getItem(stateSets[st].at(redNo));
+        return items.getItem(getStateItemAt(st, redNo));
     }
 
     /** Return the entry symbol for a given state.
      */
     public int getEntry(int st) {
-        return (st<0) ? (numSyms-1) : entry[st];
+        return (st<0) ? (numSyms-1) : entry.get(st);
     }
 
     /** Return the set of items for a given state.
      */
-    public IntSet getItemsAt(int st) {
-        return stateSets[st];
+    public SortedSet<Integer> getItemsAt(int st) {
+        return stateSets.get(st);
+    }
+
+    /** Return the set of items for a given state.
+     */
+    public int getStateItemAt(int st, int redNo) {
+        List<Integer> items = new ArrayList<>(stateSets.get(st));
+        return items.get(redNo);
     }
 
     /** Return the goto table for a given state.
@@ -170,19 +179,18 @@ public class Machine {
      *  our job is done.
      */
     private void calcLR0states() {
-        stateSets    = new IntSet[DEFAULT_NUM_STATES];
-        succState    = new int[DEFAULT_NUM_STATES][];
-        entry        = new int[DEFAULT_NUM_STATES];
-        nullReds     = new IntSet[DEFAULT_NUM_STATES];
-        stateSets[0] = IntSet.singleton(items.getStartItem());
-        numStates    = 1;
+        stateSets    = new ArrayList<>(DEFAULT_NUM_STATES);
+        succState    = new HashMap<>();
+        entry        = new ArrayList<>(DEFAULT_NUM_STATES);
+        nullReds     = new HashMap<>();
+        stateSets.add(new TreeSet<>(Arrays.asList(items.getStartItem())));
+        entry.add(0);
 
-        IntSet[] trans    = new IntSet[numSyms];
-        int      numTrans = 0;
         int[]    leftnt   = BitSet.make(numNTs);
 
-        for (int head = 0; head<numStates; head++) {
-            IntSet kernel = stateSets[head];
+        for (int head = 0; head<entry.size(); head++) {
+            Map<Integer, SortedSet<Integer>> trans    = new HashMap<>();
+            SortedSet<Integer> kernel = stateSets.get(head);
             BitSet.clear(leftnt);
 
             // Calculate transitions for (the closure of) the
@@ -198,9 +206,7 @@ public class Machine {
                     if (grammar.isNonterminal(sym)) {
                         BitSet.addTo(leftnt, left.at(sym));
                     }
-                    if (addValue(trans, sym, nxt)) {
-                        numTrans++;
-                    }
+                    addValue(trans, sym, nxt);
                 }
             }
 
@@ -216,9 +222,7 @@ public class Machine {
                         int[] rhs = prods[i].getRhs(this.grammar);
                         int   nxt = items.getFirstKernel(nt, i);
                         if (rhs.length!=0) {
-                            if (addValue(trans, rhs[0], nxt)) {
-                                numTrans++;
-                            }
+                            addValue(trans, rhs[0], nxt);
                         } else {
                             addValue(nullReds, head, nxt);
                         }
@@ -229,19 +233,14 @@ public class Machine {
             // Transfer information into successor transition
             // table, adding new states as necessary.
 
-            int[] toState = new int[numTrans];
-            int[] onSym   = new int[numTrans];
-            int   count   = 0;
-            for (int i=0; count<numTrans; i++) {
-                if (trans[i]!=null) {
-                    toState[count] = addState(i, trans[i]);
-                    onSym[count]   = i;
-                    trans[i]       = null;
-                    count++;
-                }
+            int[] toState = new int[trans.size()];
+            int count = 0;
+
+            for (Map.Entry<Integer, SortedSet<Integer>> entry : trans.entrySet()) {
+              toState[count++] = addState(entry.getKey(), entry.getValue());
             }
-            numTrans         = 0;
-            succState[head]  = toState;
+
+            succState.put(head, toState);
         }
         mergeNullReds();
     }
@@ -253,14 +252,8 @@ public class Machine {
      *  @return a boolean to indicate if a new set was created
      *  (i.e., if a table row was written to for the first time).
      */
-    private boolean addValue(IntSet[] collect, int no, int val) {
-        if (collect[no]==null) {
-           collect[no] = IntSet.singleton(val);
-           return true;
-        } else {
-            collect[no].add(val);
-            return false;
-        }
+    private void addValue(Map<Integer, SortedSet<Integer>> collect, int no, int val) {
+      collect.computeIfAbsent(no, x -> new TreeSet<>()).add(val);
     }
 
     /** Return the state number corresponding to a given set of kernel
@@ -273,41 +266,24 @@ public class Machine {
      *  @param  state  A set of integers representing a set of items.
      *  @return        The number of the corresponding state.
      */
-    private int addState(int sym, IntSet state) {
-        for (int i=0; i<numStates; i++) {
-            if (stateSets[i].equals(state)) {
+    private int addState(int sym, SortedSet<Integer> state) {
+        for (int i=0; i<entry.size(); i++) {
+            if (stateSets.get(i).equals(state)) {
                 return i;
             }
         }
         if (acceptItems.equals(state)) {
             return (-1);
         }
-        if (numStates>=stateSets.length) {
-            int newLen             = 2*stateSets.length;
-            IntSet[] newStateSets  = new IntSet[newLen];
-            int[][]  newSuccState  = new int[newLen][];
-            IntSet[] newNullReds   = new IntSet[newLen];
-            int[]    newEntry      = new int[newLen];
-            for (int i=0; i<numStates; i++) {
-                newStateSets[i]  = stateSets[i];
-                newSuccState[i]  = succState[i];
-                newEntry[i]      = entry[i];
-                newNullReds[i]   = nullReds[i];
-            }
-            stateSets  = newStateSets;
-            succState  = newSuccState;
-            entry      = newEntry;
-            nullReds   = newNullReds;
-        }
-        stateSets[numStates] = state;
-        entry[numStates]     = sym;
-        return numStates++;
+        stateSets.add(state);
+        entry.add(sym);
+        return entry.size() - 1;
     }
 
     /** A dummy item set, equal to {-1}, and representing the
      *  accept state, numbered (-1).
      */
-    private final IntSet acceptItems = IntSet.singleton(-1);
+    private final SortedSet<Integer> acceptItems = new TreeSet<>(Arrays.asList(-1));
 
     /** Add null reductions to the item set for each state.
      *  Null reductions are for items of the form A -> _
@@ -320,13 +296,13 @@ public class Machine {
      *  sets when the machine states have all been built.
      */
     private void mergeNullReds() {
-        for (int i=0; i<numStates; i++) {
-            if (nullReds[i]!=null) {
-                Iterator<Integer> its = nullReds[i].iterator();
+        for (int i=0; i<entry.size(); i++) {
+            if (nullReds.get(i)!=null) {
+                Iterator<Integer> its = nullReds.get(i).iterator();
                 while (its.hasNext()) {
-                    stateSets[i].add(its.next());
+                    stateSets.get(i).add(its.next());
                 }
-                nullReds[i] = null;
+                nullReds.remove(i);
             }
         }
     }
@@ -334,27 +310,27 @@ public class Machine {
     /** Calculate goto and shift tables.
      */
     private void calcGotosShifts() {
-        gotos  = new int[numStates][];
-        shifts = new int[numStates][];
-        for (int i=0; i<numStates; i++) {
+        gotos  = new int[entry.size()][];
+        shifts = new int[entry.size()][];
+        for (int i=0; i<entry.size(); i++) {
             int numGotos  = 0;
             int numShifts = 0;
-            for (int j=0; j<succState[i].length; j++) {
-                int dst = succState[i][j];
-                if (grammar.isTerminal(entry[dst])) {
+            for (int j=0; j<succState.get(i).length; j++) {
+                int dst = succState.get(i)[j];
+                if (grammar.isTerminal(entry.get(dst))) {
                     numShifts++;
                 } else {
                     numGotos++;
                 }
             }
-            if (stateSets[i].contains(items.getEndItem())) {
+            if (stateSets.get(i).contains(items.getEndItem())) {
                 numShifts++;
             }
             gotos[i]  = new int[numGotos];
             shifts[i] = new int[numShifts];
-            for (int j=succState[i].length; 0<j--; ) {
-                int dst = succState[i][j];
-                if (grammar.isTerminal(entry[dst])) {
+            for (int j=succState.get(i).length; 0<j--; ) {
+                int dst = succState.get(i)[j];
+                if (grammar.isTerminal(entry.get(dst))) {
                     shifts[i][--numShifts] = dst;
                 } else {
                     gotos[i][--numGotos] = dst;
@@ -369,20 +345,20 @@ public class Machine {
     /** Calculate reduce items.
      */
     private void calcReduceOffsets() {
-        reduceOffsets = new int[numStates][];
-        for (int i=0; i<numStates; i++) {
+        reduceOffsets = new int[entry.size()][];
+        for (int i=0; i<entry.size(); i++) {
             int    numReds = 0;
-            IntSet set     = stateSets[i];
+            List<Integer> set     = new ArrayList<>(stateSets.get(i));
             int    sz      = set.size();
             for (int j=0; j<sz; j++) {
-                if (items.getItem(set.at(j)).canReduce()) {
+                if (items.getItem(set.get(j)).canReduce()) {
                     numReds++;
                 }
             }
             reduceOffsets[i] = new int[numReds];
             int pos = 0;
             for (int j=0; j<sz; j++) {
-                if (items.getItem(set.at(j)).canReduce()) {
+                if (items.getItem(set.get(j)).canReduce()) {
                     reduceOffsets[i][pos++] = j;
                 }
             }
@@ -392,19 +368,19 @@ public class Machine {
     /** Output the constructed machine for debugging and inspection.
      */
     public void display(java.io.PrintWriter out) {
-        for (int i=0; i<numStates; i++) {
+        for (int i=0; i<entry.size(); i++) {
             out.println("state " + i);
-            for (Iterator<Integer> its = stateSets[i].iterator(); its.hasNext();) {
+            for (Iterator<Integer> its = stateSets.get(i).iterator(); its.hasNext();) {
                 out.print("\t");
                 items.getItem(its.next()).display(out);
                 out.println();
             }
             out.println();
-            if (succState[i].length>0) {
-                for (int j=0; j<succState[i].length; j++) {
-                    int dst = succState[i][j];
-                    out.println("\t" + grammar.getSymbol(entry[dst]) +
-                                " goto " + succState[i][j]);
+            if (succState.get(i).length>0) {
+                for (int j=0; j<succState.get(i).length; j++) {
+                    int dst = succState.get(i)[j];
+                    out.println("\t" + grammar.getSymbol(entry.get(dst)) +
+                                " goto " + succState.get(i)[j]);
                 }
                 out.println();
             }

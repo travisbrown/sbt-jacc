@@ -7,6 +7,7 @@ package dev.travisbrown.jacc.util;
 
 import java.io.PrintWriter;
 import java.util.Iterator;
+import java.util.Map;
 
 /** An implementation of the strongly connected components algorithm.
  */
@@ -152,6 +153,29 @@ public class SCC {
         for (int i=0; i<len; i++) {
             for (int j=0; j<adj[i].length; j++) {
                 int n = adj[i][j];
+                counts[n]--;
+                rev[n][counts[n]] = i;
+            }
+        }
+        return rev;
+    }
+
+    public static int[][] invert(Map<Integer, int[]> adj) {
+        int len = adj.size();
+
+        int[] counts = new int[len];
+        for (int i=0; i<len; i++) {
+            for (int j=0; j<adj.get(i).length; j++) {
+                counts[adj.get(i)[j]]++;
+            }
+        }
+        int[][] rev = new int[len][];
+        for (int i=0; i<len; i++) {
+            rev[i] = new int[counts[i]];
+        }
+        for (int i=0; i<len; i++) {
+            for (int j=0; j<adj.get(i).length; j++) {
+                int n = adj.get(i)[j];
                 counts[n]--;
                 rev[n][counts[n]] = i;
             }

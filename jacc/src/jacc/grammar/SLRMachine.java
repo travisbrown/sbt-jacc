@@ -5,7 +5,8 @@
 
 package dev.travisbrown.jacc.grammar;
 
-import dev.travisbrown.jacc.util.IntSet;
+import java.util.ArrayList;
+import java.util.List;
 
 /** A machine that provides SLR lookahead sets for each reduction.
  */
@@ -35,13 +36,13 @@ public class SLRMachine extends LookaheadMachine {
     /** Calculate lookahead sets.
      */
     private void calcLookahead() {
-        laReds = new int[numStates][][];
-        for (int i=0; i<numStates; i++) {
-            IntSet its = getItemsAt(i);
+        laReds = new int[entry.size()][][];
+        for (int i=0; i<entry.size(); i++) {
+            List<Integer> its = new ArrayList<>(getItemsAt(i));
             int[]  rs  = getReducesAt(i);
             laReds[i]  = new int[rs.length][];
             for (int j=0; j<rs.length; j++) {
-                int lhs      = items.getItem(its.at(rs[j])).getLhs();
+                int lhs      = items.getItem(its.get(rs[j])).getLhs();
                 laReds[i][j] = follow.at(lhs);
             }
         }
@@ -52,14 +53,14 @@ public class SLRMachine extends LookaheadMachine {
      */
     public void display(java.io.PrintWriter out) {
         super.display(out);
-        for (int i=0; i<numStates; i++) {
-            IntSet its = getItemsAt(i);
+        for (int i=0; i<entry.size(); i++) {
+            List<Integer> its = new ArrayList<>(getItemsAt(i));
             int[]  rs  = getReducesAt(i);
             if (rs.length>0) {
                 out.println("In state " + i + ":");
                 for (int j=0; j<rs.length; j++) {
                     out.print(" Item: ");
-                    items.getItem(its.at(rs[j])).display(out);
+                    items.getItem(its.get(rs[j])).display(out);
                     out.println();
                     out.print("  Lookahead: {");
                     out.print(grammar.displaySymbolSet(laReds[i][j], numNTs));
