@@ -6,7 +6,6 @@
 package dev.travisbrown.jacc.grammar;
 
 import dev.travisbrown.jacc.JaccProd;
-import dev.travisbrown.jacc.util.SCC;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;

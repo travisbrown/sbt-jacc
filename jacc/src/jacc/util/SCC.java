@@ -16,19 +16,11 @@ import java.util.stream.IntStream;
 /** An implementation of the strongly connected components algorithm.
  */
 public class SCC {
-    public static int[][] get(int[][] depends, int[][] revdeps, int size) {
-        return new GetComponents(depends,size,
-                 new ArrangeByFinish(revdeps,size)
+    public static int[][] get(int[][] depends) {
+        return new GetComponents(depends, depends.length,
+                 new ArrangeByFinish(invert(depends), depends.length)
                      .getFinishOrder())
                    .getComponents();
-    }
-
-    public static int[][] get(int[][] depends) {
-        return get(depends, invert(depends), depends.length);
-    }
-
-    public static int[][] get(int[][] depends, int len) {
-        return get(depends, invert(depends, len), len);
     }
 
     /** A framework for depth first searches.  A search algorithm is
@@ -139,11 +131,8 @@ public class SCC {
         }
     }
 
-    private static int[][] invert(int[][] adj) {
-        return invert(adj, adj.length);
-    }
-
-    public static int[][] invert(int[][] adj, int len) {
+    public static int[][] invert(int[][] adj) {
+        int len = adj.length;
         int[] counts = new int[len];
         for (int i=0; i<len; i++) {
             for (int j=0; j<adj[i].length; j++) {
@@ -185,19 +174,5 @@ public class SCC {
             }
         }
         return rev;
-    }
-
-    private static void displayComponents(PrintWriter out, int[][] comps) {
-        out.println("Components (" + comps.length + " in total):");
-        for (int i=0; i<comps.length; i++) {
-            out.print(" Component " + i + ": {");
-            for (int j=0; j<comps[i].length; j++) {
-                if (j>0) {
-                    out.print(", ");
-                }
-                out.print(comps[i][j]);
-            }
-            out.println("}");
-        }
     }
 }
