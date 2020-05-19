@@ -6,8 +6,10 @@
 package dev.travisbrown.jacc.util;
 
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 /** An implementation of the strongly connected components algorithm.
  */
@@ -87,7 +89,7 @@ public class SCC {
         private int[] order;
 
         ArrangeByFinish(int [][] dependencies, int size) {
-            super(new SeqInterator(0,size), dependencies);
+            super(IntStream.range(0,size).iterator(), dependencies);
             dfsNum = size;
             order  = new int[dfsNum];
         }
@@ -107,7 +109,7 @@ public class SCC {
         private int[] compNo;
 
         GetComponents(int [][] dependencies, int size, int[] order) {
-            super(new ElemInterator(order), dependencies);
+            super(Arrays.stream(order).iterator(), dependencies);
             numComps = 0;
             compNo   = new int[size];
         }
