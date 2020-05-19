@@ -5,7 +5,8 @@
 
 package dev.travisbrown.jacc.grammar;
 
-import dev.travisbrown.jacc.util.BitSet;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /** A machine that provides LR(0) lookahead sets for each reduction.
  *  LR(0) doesn't really provide any lookaheads at all, but we can
@@ -15,22 +16,22 @@ import dev.travisbrown.jacc.util.BitSet;
 public class LR0Machine extends LookaheadMachine {
     /** A bitset of all terminal symbols.
      */
-    private final int[] allTokens;
+    private final SortedSet<Integer> allTokens;
 
     /** Construct a machine for a given grammar.
      */
     public LR0Machine(Grammar grammar) {
         super(grammar);
         int numTs = grammar.getNumTs();
-        allTokens = BitSet.make(numTs);
+        allTokens = new TreeSet<>();
         for (int i=0; i<numTs; i++) {
-            BitSet.set(allTokens, i);
+            allTokens.add(i);
         }
     }
 
     /** Return lookahead sets for the reductions at a given state.
      */
-    public int[] getLookaheadAt(int st, int i) {
+    public SortedSet<Integer> getLookaheadAt(int st, int i) {
         return allTokens;
     }
 

@@ -5,6 +5,8 @@
 
 package dev.travisbrown.jacc.grammar;
 
+import java.util.SortedSet;
+
 /** A base class for machines that provide lookahead information.
  *  This makes it possible to support both SLR and LALR parsers
  *  in the same framework.
@@ -18,5 +20,5 @@ public abstract class LookaheadMachine extends Machine {
 
     /** Return lookahead sets for the reductions at a given state.
      */
-    public abstract int[] getLookaheadAt(int st, int i);
+    public abstract SortedSet<Integer> getLookaheadAt(int st, int i);
 }
