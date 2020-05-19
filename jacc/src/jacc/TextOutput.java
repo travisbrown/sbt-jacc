@@ -5,10 +5,11 @@
 
 package dev.travisbrown.jacc;
 
-import java.io.PrintWriter;
 import dev.travisbrown.jacc.grammar.Tables;
 import dev.travisbrown.jacc.compiler.Handler;
-import dev.travisbrown.jacc.util.IntSet;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 /** Used to generate a textual description of the parser machine.
  */
@@ -30,11 +31,11 @@ public class TextOutput extends Output {
             out.println(describeEntry(i));
 
             // Display the items for this state:
-            IntSet its = machine.getItemsAt(i);
+            List<Integer> its = new ArrayList<>(machine.getItemsAt(i));
             int    sz  = its.size();
             for (int j=0; j<sz; j++) {
                 indent(out, 1);
-                machine.getItems().getItem(its.at(j)).display(out);
+                machine.getItems().getItem(its.get(j)).display(out);
                 out.println();
             }
             out.println();

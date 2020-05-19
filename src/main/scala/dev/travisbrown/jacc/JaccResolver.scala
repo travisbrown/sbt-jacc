@@ -38,9 +38,8 @@ class JaccResolver(machine: LookaheadMachine) extends Resolver {
   def srResolve(tables: Tables, st: Int, tok: Int, redNo: Int): Unit = {
     val grammar = machine.getGrammar()
     val sym = grammar.getTerminal(tok)
-    val its = machine.getItemsAt(st)
     val items = machine.getItems()
-    val prod = items.getItem(its.at(redNo)).getProd()
+    val prod = items.getItem(machine.getStateItemAt(st, redNo)).getProd()
 
     (sym, prod) match {
       case (jSym: JaccSymbol, jProd: JaccProd) =>
@@ -67,10 +66,9 @@ class JaccResolver(machine: LookaheadMachine) extends Resolver {
   def rrResolve(tables: Tables, st: Int, tok: Int, redNo: Int): Unit = {
     val grammar = machine.getGrammar()
     val redNo0 = tables.getArgAt(st)(tok)
-    val its = machine.getItemsAt(st)
     val items = machine.getItems()
-    val prod0 = items.getItem(its.at(redNo0)).getProd()
-    val prod = items.getItem(its.at(redNo)).getProd()
+    val prod0 = items.getItem(machine.getStateItemAt(st, redNo)).getProd()
+    val prod = items.getItem(machine.getStateItemAt(st, redNo)).getProd()
     val sym = grammar.getTerminal(tok)
 
     if (prod.seqNo < prod0.seqNo) {
