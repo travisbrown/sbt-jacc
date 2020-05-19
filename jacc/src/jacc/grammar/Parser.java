@@ -7,7 +7,7 @@ package dev.travisbrown.jacc.grammar;
 
 /** Provides a parsing engine for a given grammar/machine/parse table.
  */
-public class Parser {
+public final class Parser {
     /** Parse tables for this machine.
      */
     private final Tables tables;
