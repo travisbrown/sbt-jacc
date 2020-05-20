@@ -12,42 +12,36 @@ import java.util.TreeSet;
 
 /** A machine that provides SLR lookahead sets for each reduction.
  */
-public class SLRMachine extends LookaheadMachine {
-    // For convenience, we cache the following fields from grammar:
-    private final Follow follow;
+public final class SLRMachine extends LookaheadMachine {
+    /** Records the lookahead sets for reduce items.  Lookahead sets are
+     *  stored in the order specified by Machine.getReducesAt().
+     */
+    private final SortedSet<Integer>[][] laReds;
 
     /** Construct a machine for a given grammar.
      */
     public SLRMachine(Grammar grammar) {
         super(grammar);
-        this.follow = grammar.getFollow();
-        calcLookahead();
-    }
 
-    /** Records the lookahead sets for reduce items.  Lookahead sets are
-     *  stored in the order specified by Machine.getReducesAt().
-     */
-    private SortedSet<Integer>[][] laReds;
+        /** Calculate lookahead sets.
+         */
+        this.laReds = new SortedSet[entry.size()][];
+
+        for (int i=0; i<entry.size(); i++) {
+            List<Integer> its = new ArrayList<>(this.getItemsAt(i));
+            int[]  rs  = getReducesAt(i);
+            this.laReds[i]  = new SortedSet[rs.length];
+            for (int j=0; j<rs.length; j++) {
+                int lhs      = this.getItems().getItem(its.get(rs[j])).getLhs();
+                laReds[i][j] = this.getGrammar().getFollow().at(lhs);
+            }
+        }
+    }
 
     /** Return lookahead sets for the reductions at a given state.
      */
     public SortedSet<Integer> getLookaheadAt(int st, int i) {
-        return laReds[st][i];
-    }
-
-    /** Calculate lookahead sets.
-     */
-    private void calcLookahead() {
-        laReds = new SortedSet[entry.size()][];
-        for (int i=0; i<entry.size(); i++) {
-            List<Integer> its = new ArrayList<>(getItemsAt(i));
-            int[]  rs  = getReducesAt(i);
-            laReds[i]  = new SortedSet[rs.length];
-            for (int j=0; j<rs.length; j++) {
-                int lhs      = items.getItem(its.get(rs[j])).getLhs();
-                laReds[i][j] = follow.at(lhs);
-            }
-        }
+        return this.laReds[st][i];
     }
 
     /** Output the results of lookahead calculations for
@@ -62,10 +56,10 @@ public class SLRMachine extends LookaheadMachine {
                 out.println("In state " + i + ":");
                 for (int j=0; j<rs.length; j++) {
                     out.print(" Item: ");
-                    items.getItem(its.get(rs[j])).display(out);
+                    this.getItems().getItem(its.get(rs[j])).display(out);
                     out.println();
                     out.print("  Lookahead: {");
-                    out.print(grammar.displaySymbolSet(laReds[i][j], numNTs));
+                    out.print(this.getGrammar().displaySymbolSet(this.laReds[i][j], this.getGrammar().getNumNTs()));
                     out.println("}");
                 }
             }
