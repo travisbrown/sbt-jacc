@@ -15,7 +15,6 @@ import dev.travisbrown.jacc.compiler.Position;
 import dev.travisbrown.jacc.compiler.Diagnostic;
 import dev.travisbrown.jacc.compiler.Failure;
 import dev.travisbrown.jacc.compiler.Warning;
-import dev.travisbrown.jacc.compiler.JavaSource;
 import dev.travisbrown.jacc.compiler.Phase;
 
 import dev.travisbrown.jacc.grammar.Grammar;
