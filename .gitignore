@@ -9,3 +9,4 @@ target/
 .classpath
 tmp/
 build/
+test-build/
