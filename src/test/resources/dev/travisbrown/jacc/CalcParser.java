@@ -494,13 +494,11 @@ class CalcParser implements CalcTokens {
         }
     }
 
-    protected void yyexpand() {
+    private void yyexpand() {
         int[] newyyst = new int[2*yyst.length];
         Expr[] newyysv = new Expr[2*yyst.length];
-        for (int i=0; i<yyst.length; i++) {
-            newyyst[i] = yyst[i];
-            newyysv[i] = yysv[i];
-        }
+        System.arraycopy(yyst, 0, newyyst, 0, yyst.length);
+        System.arraycopy(yysv, 0, newyysv, 0, yyst.length);
         yyst = newyyst;
         yysv = newyysv;
     }

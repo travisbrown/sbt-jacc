@@ -247,15 +247,13 @@ public class ParserOutput extends Output {
      */
     private void defineExpand(PrintWriter out, int ind) {
         indent(out, ind, new String[] {
-            "protected void yyexpand() {",
+            "private void yyexpand() {",
                "    int[] newyyst = new int[2*yyst.length];" });
         indent(out, ind+1, settings.getTypeName() + "[] newyysv = new " +
                            settings.getTypeName() + "[2*yyst.length];");
         indent(out, ind, new String[] {
-            "    for (int i=0; i<yyst.length; i++) {",
-            "        newyyst[i] = yyst[i];",
-            "        newyysv[i] = yysv[i];",
-            "    }",
+            "    System.arraycopy(yyst, 0, newyyst, 0, yyst.length);",
+            "    System.arraycopy(yysv, 0, newyysv, 0, yyst.length);",
             "    yyst = newyyst;",
             "    yysv = newyysv;",
             "}" });
