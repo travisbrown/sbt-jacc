@@ -9,7 +9,8 @@ import dev.travisbrown.jacc.grammar.LookaheadMachine
 import dev.travisbrown.jacc.grammar.Resolver
 import dev.travisbrown.jacc.grammar.Tables
 
-/** Describes the strategy for resolving conflicts in jacc generated parsers.
+/**
+ * Describes the strategy for resolving conflicts in jacc generated parsers.
  *
  *  Construct a conflict resolver for a given machine, following the
  *  rules and conventions of Jacc/yacc.
@@ -19,19 +20,23 @@ class JaccResolver(machine: LookaheadMachine) extends Resolver {
   private var numSRConflicts = 0
   private var numRRConflicts = 0
 
-  /** Return the number of shift/reduce conflicts detected.
+  /**
+   * Return the number of shift/reduce conflicts detected.
    */
   def getNumSRConflicts(): Int = this.numSRConflicts
 
-  /** Return the number of reduce/reduce conflicts detected.
+  /**
+   * Return the number of reduce/reduce conflicts detected.
    */
   def getNumRRConflicts(): Int = this.numRRConflicts
 
-  /** Returns a description of the conflicts at a given state.
+  /**
+   * Returns a description of the conflicts at a given state.
    */
   def getConflictsAt(st: Int): String = Conflicts.describe(machine, st, conflicts(st))
 
-  /** Resolve a shift/reduce conflict.  First, see if the conflict
+  /**
+   * Resolve a shift/reduce conflict.  First, see if the conflict
    *  can be resolved using fixity information.  If that fails, we
    *  choose the shift over the reduce and report a conflict.
    */
@@ -59,7 +64,8 @@ class JaccResolver(machine: LookaheadMachine) extends Resolver {
     }
   }
 
-  /** Resolve a reduce/reduce conflict.  We cannot ever avoid a
+  /**
+   * Resolve a reduce/reduce conflict.  We cannot ever avoid a
    *  reduce/reduce conflict, but the entry that we leave in the
    *  table must be for the production with the lowest number.
    */

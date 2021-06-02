@@ -21,19 +21,21 @@ object Definition {
 case class Production(name: String, alts: List[(List[String], Option[String])])
 
 case class GrammarDef(definitions: List[Definition], productions: List[Production], postCode: String) {
-  private val fixities: Map[String, Fixity] = definitions.foldLeft((Map.empty[String, Fixity], 0)) {
-    case ((fs, prec), Definition.Right(names)) => (fs ++ names.map((_, Fixity.right(prec))), prec + 1)
-    case ((fs, prec), Definition.Left(names)) => (fs ++ names.map((_, Fixity.left(prec))), prec + 1)
-    case (acc, _) => acc
-  }._1
+  private val fixities: Map[String, Fixity] = definitions
+    .foldLeft((Map.empty[String, Fixity], 0)) {
+      case ((fs, prec), Definition.Right(names)) => (fs ++ names.map((_, Fixity.right(prec))), prec + 1)
+      case ((fs, prec), Definition.Left(names))  => (fs ++ names.map((_, Fixity.left(prec))), prec + 1)
+      case (acc, _)                              => acc
+    }
+    ._1
 
   private val nonTerminalTypes: Map[String, String] = definitions.flatMap {
     case Definition.Type(Some(tpe), names) => names.map((_, tpe))
-    case _ => Nil
+    case _                                 => Nil
   }.toMap
 
-  private val startSymbolName: Option[String] = definitions.collectFirst {
-    case Definition.Start(name) => name
+  private val startSymbolName: Option[String] = definitions.collectFirst { case Definition.Start(name) =>
+    name
   }
 
   private val Literal = "'(.)'".r
@@ -41,15 +43,13 @@ case class GrammarDef(definitions: List[Definition], productions: List[Productio
   private val nonTerminals: List[JaccSymbol] = {
     var seqNo = 0
 
-    val prodSyms = productions.map {
-      case Production(name, alts) =>
-        val prods = alts.map {
-          case (syms, action) =>
-            seqNo += 1
-            new JaccProd(syms.toArray, seqNo, action)
-        }.toArray
+    val prodSyms = productions.map { case Production(name, alts) =>
+      val prods = alts.map { case (syms, action) =>
+        seqNo += 1
+        new JaccProd(syms.toArray, seqNo, action)
+      }.toArray
 
-        JaccSymbol(name, -1, -1, None, nonTerminalTypes.get(name), prods)
+      JaccSymbol(name, -1, -1, None, nonTerminalTypes.get(name), prods)
     }
 
     startSymbolName match {
@@ -61,28 +61,32 @@ case class GrammarDef(definitions: List[Definition], productions: List[Productio
     }
   }
 
-  private val literals: List[JaccSymbol] = definitions.flatMap {
-    case Definition.Token(tpe, names) => names.collect {
-      case name @ Literal(c) => JaccSymbol(name, c.charAt(0).toInt, -1, fixities.get(name), tpe, Array.empty)
+  private val literals: List[JaccSymbol] = definitions
+    .flatMap {
+      case Definition.Token(tpe, names) =>
+        names.collect { case name @ Literal(c) =>
+          JaccSymbol(name, c.charAt(0).toInt, -1, fixities.get(name), tpe, Array.empty)
+        }
+      case _ => Nil
     }
-    case _ => Nil
-  }.sortBy(_.name)
+    .sortBy(_.name)
 
   private def getNextNum(n: Int): Int = if (literals.map(_.num).contains(n)) getNextNum(n + 1) else n
 
   private val terminals: List[JaccSymbol] = (
     definitions.flatMap {
-      case Definition.Token(tpe, names) => names.flatMap {
-        case name @ Literal(c) => None
-        case name => Some(JaccSymbol(name, -1, -1, fixities.get(name), tpe, Array.empty))
-      }
+      case Definition.Token(tpe, names) =>
+        names.flatMap {
+          case name @ Literal(c) => None
+          case name              => Some(JaccSymbol(name, -1, -1, fixities.get(name), tpe, Array.empty))
+        }
       case _ => Nil
     } :+ JaccSymbol("error", -1, -1, None, None, Array.empty)
-  ).foldLeft((List.empty[JaccSymbol], 1)) {
-    case ((acc, num), sym) =>
-      val nextNum = getNextNum(num)
-      (acc :+ sym.copy(num = nextNum), nextNum + 1)
-  }._1.sortBy(_.name)
+  ).foldLeft((List.empty[JaccSymbol], 1)) { case ((acc, num), sym) =>
+    val nextNum = getNextNum(num)
+    (acc :+ sym.copy(num = nextNum), nextNum + 1)
+  }._1
+    .sortBy(_.name)
 
   lazy val getGrammar: Grammar = {
     val arr: Array[JaccSymbol] =
@@ -96,10 +100,10 @@ case class GrammarDef(definitions: List[Definition], productions: List[Productio
   def updateSettings(settings: Settings): Settings = {
     settings.addPostText(postCode)
     definitions.foreach {
-      case Definition.Code(value) => settings.addPreText(value)
-      case Definition.Class(value) => settings.setClassName(value)
+      case Definition.Code(value)      => settings.addPreText(value)
+      case Definition.Class(value)     => settings.setClassName(value)
       case Definition.Interface(value) => settings.setInterfaceName(value)
-      case Definition.Package(value) => settings.setPackageName(value)
+      case Definition.Package(value)   => settings.setPackageName(value)
       //case Definition.Extends(value) => settings.setExtendsName(value)
       //case Definition.Implements(value) => settings.setImplementsName(value)
       case Definition.Semantic(value) => settings.setTypeName(value)
@@ -115,11 +119,12 @@ case class GrammarDef(definitions: List[Definition], productions: List[Productio
     import scala.collection.JavaConverters._
 
     fastparse.parse(input, GrammarDefParser.errorExamples(_)) match {
-      case Parsed.Success(values, _) => values.flatMap {
-        case (name, alts) => alts.map { alt =>
-          (name, alt.map(s => getGrammar.lookup(s).tokenNo).toArray)
-        }
-      }.asJava
+      case Parsed.Success(values, _) =>
+        values.flatMap { case (name, alts) =>
+          alts.map { alt =>
+            (name, alt.map(s => getGrammar.lookup(s).tokenNo).toArray)
+          }
+        }.asJava
     }
   }
 }
@@ -127,7 +132,7 @@ case class GrammarDef(definitions: List[Definition], productions: List[Productio
 object GrammarDefParser {
   import Definition._
 
-  private implicit val whitespace: ParsingRun[_] => ParsingRun[Unit] =
+  implicit private val whitespace: ParsingRun[_] => ParsingRun[Unit] =
     JavaWhitespace.whitespace.andThen(MultiLineWhitespace.whitespace)
 
   def parseFile(path: String): GrammarDef = {
@@ -175,10 +180,12 @@ object GrammarDefParser {
     P(javaIdentifier | ("'" ~~ AnyChar ~~ "'").!)
 
   private def javaIdentifier[_: P]: P[String] = P(
-    (CharPred(Character.isJavaIdentifierStart) ~~ CharsWhile(Character.isJavaIdentifierPart).repX).repX(
-      min = 1,
-      sep = "."
-    ).!
+    (CharPred(Character.isJavaIdentifierStart) ~~ CharsWhile(Character.isJavaIdentifierPart).repX)
+      .repX(
+        min = 1,
+        sep = "."
+      )
+      .!
   )
 
   private def javaGenericParam[_: P]: P[String] = P("<" ~ javaType.rep(min = 1, sep = ",").! ~ ">")
@@ -189,8 +196,8 @@ object GrammarDefParser {
 
   private def errorExampleMessage[_: P]: P[String] = P("\"" ~ ("\\\"" | (!"\"" ~ AnyChar)).rep.! ~ "\"")
   private def errorExample[_: P]: P[(String, List[List[String]])] =
-    P(errorExampleMessage ~ ":" ~ (symbol.!.rep).rep(sep = "|") ~ ";").map {
-      case (message, alts) => (message, alts.map(_.toList).toList)
+    P(errorExampleMessage ~ ":" ~ (symbol.!.rep).rep(sep = "|") ~ ";").map { case (message, alts) =>
+      (message, alts.map(_.toList).toList)
     }
 
   def errorExamples[_: P]: P[List[(String, List[List[String]])]] =

@@ -1,4 +1,6 @@
-organization in ThisBuild := "dev.travisbrown"
+ThisBuild / organization := "dev.travisbrown"
+ThisBuild / scalaVersion := "2.12.14"
+ThisBuild / githubWorkflowPublishTargetBranches := Nil
 
 val compilerOptions = Seq(
   "-deprecation",
@@ -17,10 +19,10 @@ val compilerOptions = Seq(
 
 val baseSettings = Seq(
   scalacOptions ++= compilerOptions,
-  scalacOptions in (Compile, console) ~= {
+  Compile / console / scalacOptions ~= {
     _.filterNot(Set("-Ywarn-unused-import", "-Ywarn-unused:imports"))
   },
-  scalacOptions in (Test, console) ~= {
+  Test / console / scalacOptions ~= {
     _.filterNot(Set("-Ywarn-unused-import", "-Ywarn-unused:imports"))
   }
 )
@@ -32,12 +34,12 @@ lazy val root = (project in file("."))
   .settings(allSettings)
   .settings(
     name := "sbt-jacc",
-    javaSource.in(Compile) := baseDirectory.value / "jacc" / "src",
+    Compile / javaSource := baseDirectory.value / "jacc" / "src",
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %% "fastparse" % "2.3.0",
+      "com.lihaoyi" %% "fastparse" % "2.3.2",
       "de.jflex" % "jflex" % "1.8.2"
     ),
-    libraryDependencies += "org.scalameta" %% "munit" % "0.7.6" % Test,
+    libraryDependencies += "org.scalameta" %% "munit" % "0.7.26" % Test,
     testFrameworks += new TestFramework("munit.Framework")
   )
 
@@ -47,7 +49,7 @@ lazy val publishSettings = Seq(
   homepage := Some(url("https://github.com/travisbrown/sbt-jacc")),
   licenses := Seq("GNU General Public License v3" -> url("https://www.gnu.org/licenses/gpl-3.0.en.html")),
   publishMavenStyle := true,
-  publishArtifact in Test := false,
+  Test / publishArtifact := false,
   pomIncludeRepository := { _ => false },
   publishTo := {
     val nexus = "https://oss.sonatype.org/"
