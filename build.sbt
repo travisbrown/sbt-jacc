@@ -1,5 +1,6 @@
 ThisBuild / organization := "dev.travisbrown"
 ThisBuild / scalaVersion := "2.12.14"
+ThisBuild / githubWorkflowPublishTargetBranches := Nil
 
 val compilerOptions = Seq(
   "-deprecation",
