@@ -36,7 +36,7 @@ lazy val root = (project in file("."))
     name := "sbt-jacc",
     Compile / javaSource := baseDirectory.value / "jacc" / "src",
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %% "fastparse" % "2.3.2",
+      "com.lihaoyi" %% "fastparse" % "2.3.3",
       "de.jflex" % "jflex" % "1.8.2"
     ),
     libraryDependencies += "org.scalameta" %% "munit" % "0.7.29" % Test,
