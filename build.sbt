@@ -37,7 +37,7 @@ lazy val root = (project in file("."))
     Compile / javaSource := baseDirectory.value / "jacc" / "src",
     libraryDependencies ++= Seq(
       "com.lihaoyi" %% "fastparse" % "2.3.3",
-      "de.jflex" % "jflex" % "1.8.2"
+      "de.jflex" % "jflex" % "1.9.0"
     ),
     libraryDependencies += "org.scalameta" %% "munit" % "0.7.29" % Test,
     testFrameworks += new TestFramework("munit.Framework")
